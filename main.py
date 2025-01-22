@@ -25,14 +25,14 @@ st.set_page_config(
     }
 )
 
+# Near the top of your app.py, after the imports
 def load_css(file_name):
-    with open(file_name, encoding='utf-8') as f:  # Explicitly set encoding
+    with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-
-# Load custom styles
+# Remove the existing st.markdown() call with the CSS content
+# And replace it with:
 load_css('styles.css')
-
 
 # Initialize Groq client
 try:
@@ -306,21 +306,27 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
-            # Voice Assistant Section in Sidebar
+        # Voice Assistant
         st.subheader("🎤 Voice Input")
-        record_button = st.button(
-            label="🎙️ Voice Input",
-            key="voice_input_button"
+        audio_bytes = audio_recorder(
+            text="",  # Minimal text
+            recording_color="#00ff9d",
+            neutral_color="#333333"
         )
-
-        if record_button:
-            st.info("Recording... Click again to stop.")
-            # Add the recording logic here (e.g., using `audio_recorder` or another implementation)
-            with st.spinner("Processing your voice input..."):
-                # Simulate recording or use actual logic for recording
-                st.success("Voice recorded successfully!")
-
-                
+        
+        if audio_bytes:
+            with st.spinner("Processing voice..."):
+                transcribed_text = process_voice_input(audio_bytes)
+                if transcribed_text:
+                    st.info(f"You said: {transcribed_text}")
+                    with st.spinner("Processing..."):
+                        response = process_query_with_rag(transcribed_text, social_updates_df)
+                        st.markdown(f"""
+                            <div class="ai-response">
+                                <strong>ANTNA:</strong><br>{response}
+                            </div>
+                        """, unsafe_allow_html=True)
+        
         user_query = st.text_input("💬 Ask ANTNA", placeholder="Type your question...")
         if user_query:
             with st.spinner("Processing..."):
