@@ -41,6 +41,12 @@ except:
     # Fallback to local environment variable (for local development)
     GROQ_API_KEY = "GROQ_API_KEY"
 
+
+# Add your ORS API Key here
+ORS_API_KEY = "5b3ce3597851110001cf6248103965714d2b49cead7eb8d2e234f3e6"
+ors_client = openrouteservice.Client(key=ORS_API_KEY)  # Initialize ORS client
+
+
 try:
     groq_client = Groq(api_key=GROQ_API_KEY)
     st.success("Successfully initialized Groq client!")
@@ -48,7 +54,6 @@ except Exception as e:
     st.error(f"Failed to initialize Groq client: {str(e)}")
     st.error("Please ensure GROQ_API_KEY is properly set in Streamlit Cloud secrets")
     st.stop()
-
 # Generate simulated data
 @st.cache_data
 def generate_data():
@@ -127,6 +132,110 @@ def generate_data():
     social_updates_df = pd.DataFrame(social_updates_data)
 
     return alerts_df, shelters_df, resources_df, social_updates_df
+
+def find_nearest_shelter(shelters_df, user_location, query_type="medical supplies"):
+    """
+    Find the nearest shelter to the user's location based on query type.
+    """
+    # Simulate finding the nearest shelter by calculating distances
+    shelters_df["distance"] = shelters_df.apply(
+        lambda row: np.sqrt((row["lat"] - user_location[0])**2 + (row["lon"] - user_location[1])**2),
+        axis=1
+    )
+    nearest_shelter = shelters_df.loc[shelters_df["distance"].idxmin()]
+    return nearest_shelter
+
+def process_query_with_rag_and_map(query, social_updates_df, shelters_df):
+    try:
+        relevant_updates = social_updates_df[
+            social_updates_df['message'].str.contains('|'.join(query.split()), case=False, na=False)
+        ]
+        context = "\n".join(relevant_updates['message'].tolist())
+        
+        messages = [
+            {"role": "system", "content": """You are ANTNA, an AI assistant for emergency management in Qatar. 
+            Provide clear, accurate information based on available data and social media updates."""},
+            {"role": "user", "content": f"Context from verified social media:\n{context}\n\nUser Question: {query}"}
+        ]
+        
+        response_text = ""
+        try:
+            response = groq_client.chat.completions.create(
+                messages=messages,
+                model="mixtral-8x7b-32768",
+                temperature=0.7,
+                max_tokens=500,
+                top_p=0.9
+            )
+            response_text = response.choices[0].message.content
+        except Exception as e:
+            response_text = f"AI processing error: {str(e)}"
+
+        # If the query relates to medical supplies, show a map
+        if "medical supplies" in query.lower():
+            # Simulate user's current location (replace with actual user location if available)
+            user_location = [25.3548, 51.1839]  # Example: Doha city center
+            
+            # Find nearest shelter
+            nearest_shelter = find_nearest_shelter(shelters_df, user_location, query_type="medical supplies")
+            
+            try:
+                # Request route from ORS
+                coordinates = [
+                    (user_location[1], user_location[0]),  # (lon, lat) for user location
+                    (nearest_shelter['lon'], nearest_shelter['lat'])  # (lon, lat) for shelter
+                ]
+                route = ors_client.directions(
+                    coordinates=coordinates,
+                    profile='driving-car',
+                    format='geojson',
+                    radiuses=[1000, 1000]  # Increase search radius to 1000 meters
+                )
+                route_coords = route['features'][0]['geometry']['coordinates']
+                
+                # Convert coordinates for Folium (lon, lat) -> (lat, lon)
+                route_coords = [[coord[1], coord[0]] for coord in route_coords]
+            except Exception as e:
+                st.error(f"Error fetching route: {e}")
+                # Fallback to straight line
+                route_coords = [
+                    [user_location[0], user_location[1]],
+                    [nearest_shelter['lat'], nearest_shelter['lon']]
+                ]
+
+            # Generate a map with the route
+            m = folium.Map(location=user_location, zoom_start=12)
+            
+            # Add user location marker
+            folium.Marker(
+                location=user_location,
+                popup="Your Location",
+                icon=folium.Icon(color='red', icon='info-sign')
+            ).add_to(m)
+            
+            # Add nearest shelter marker
+            folium.Marker(
+                location=[nearest_shelter['lat'], nearest_shelter['lon']],
+                popup=f"<b>{nearest_shelter['name']}</b>",
+                icon=folium.Icon(color='blue', icon='info-sign')
+            ).add_to(m)
+            
+            # Draw the route
+            folium.PolyLine(
+                locations=route_coords,
+                color='green',
+                weight=5,
+                tooltip="Route to Shelter"
+            ).add_to(m)
+            
+            # Display the map
+            st.markdown("<h4>📍 Route to Nearest Shelter with Medical Supplies</h4>", unsafe_allow_html=True)
+            st_folium(m, width=600, height=400)
+
+        return response_text
+    except Exception as e:
+        return f"Error processing query: {str(e)}"
+
 
 # Voice transcription function
 def process_voice_input(audio_bytes):
@@ -217,11 +326,18 @@ def main():
                             </div>
                         """, unsafe_allow_html=True)
         
-        # Text Input
         user_query = st.text_input("💬 Ask ANTNA", placeholder="Type your question...")
         if user_query:
             with st.spinner("Processing..."):
-                response = process_query_with_rag(user_query, social_updates_df)
+                # Check if the query mentions medical supplies or something route-related
+                if "medical supplies" in user_query.lower():
+                    # Call the map-generating function for medical supplies
+                    response = process_query_with_rag_and_map(user_query, social_updates_df, shelters_df)
+                else:
+                    # Call the standard RAG function for other queries
+                    response = process_query_with_rag(user_query, social_updates_df)
+                
+                # Display the AI response
                 st.markdown(f"""
                     <div class="ai-response">
                         <strong>ANTNA:</strong><br>{response}
@@ -251,60 +367,214 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
     
-    # Resources Tab
+    # Centers Tab
+    # Centers Tab
     with tab2:
-        st.markdown("<h2>🏥 Emergency Centers</h2>", unsafe_allow_html=True)
+        st.markdown("<h2>🏥 Critical Locations</h2>", unsafe_allow_html=True)
         
-        # Interactive Map
-        m = folium.Map(
-            location=[25.3548, 51.1839],
-            zoom_start=10,
-            tiles="cartodbdark_matter"
-        )
+        # Get the data
+        _, shelters_df, resources_df, _ = generate_data()
         
-        for _, shelter in shelters_df.iterrows():
-            capacity_pct = (shelter["current"] / shelter["capacity"]) * 100
-            color = "green" if capacity_pct < 70 else "orange" if capacity_pct < 90 else "red"
+        # Define common locations in Doha
+        doha_locations = {
+            "Doha City Center": [25.3548, 51.1839],
+            "West Bay": [25.3287, 51.5309],
+            "The Pearl": [25.3741, 51.5503],
+            "Katara Cultural Village": [25.3594, 51.5277],
+            "Hamad International Airport": [25.2608, 51.6138],
+            "Education City": [25.3149, 51.4400],
+            "Souq Waqif": [25.2867, 51.5333],
+            "Aspire Zone": [25.2684, 51.4481],
+            "Msheireb Downtown": [25.2897, 51.5335],
+            "Al Waab": [25.2590, 51.4782]
+        }
+        
+        # Create subtabs
+        list_tab, map_tab = st.tabs(["📋 List View", "🗺️ Map View"])
+        
+        # List View Tab
+        with list_tab:
+            # Create three columns for better spacing
+            cols = st.columns(3)
+            for idx, location in shelters_df.iterrows():
+                with cols[idx % 3]:
+                    resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                    occupancy = (location['current'] / location['capacity']) * 100
+                    
+                    st.markdown(f"""
+                        <div class="stats-box">
+                            <h3>{location['name']}</h3>
+                            <p>🏥 Type: {location['type']}</p>
+                            <p>📞 Contact: {location['contact']}</p>
+                            <p>👥 Occupancy: {location['current']}/{location['capacity']} 
+                            ({occupancy:.1f}%)</p>
+                            <p>💧 Water: {resources['water_supply']} units</p>
+                            <p>🍲 Food: {resources['food_supply']} units</p>
+                            <p>🏥 Medical: {resources['medical_kits']} kits</p>
+                            <p>🕒 Updated: {resources['last_updated']}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+        
+        # Map View Tab
+        with map_tab:
+            # Location Details Block (Top)
+            st.markdown("<div class='location-details-container'>", unsafe_allow_html=True)
             
-            popup_html = f"""
-                <div style="font-family: 'Space Mono', monospace; width: 200px;">
-                    <h4>{shelter['name']}</h4>
-                    <p><b>Capacity:</b> {shelter['current']}/{shelter['capacity']}</p>
-                    <p><b>Type:</b> {shelter['type']}</p>
-                    <p><b>Contact:</b> {shelter['contact']}</p>
-                    <div style="background: {'#00ff9d' if capacity_pct < 70 else '#ffbe0b' if capacity_pct < 90 else '#ff006e'}; 
-                         width: {capacity_pct}%; 
-                         height: 10px; 
-                         border-radius: 5px;">
+            # Type filter, location selector, current location, and route toggle
+            col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+            
+            with col1:
+                location_type = st.selectbox(
+                    "Filter by type",
+                    options=['All'] + list(shelters_df['type'].unique()),
+                    key='map_type_filter'
+                )
+            
+            filtered_df = shelters_df if location_type == 'All' else shelters_df[shelters_df['type'] == location_type]
+            
+            with col2:
+                selected_location = st.selectbox(
+                    "Select facility",
+                    options=filtered_df['name'].tolist(),
+                    key='map_location_select'
+                )
+            
+            with col3:
+                current_location = st.selectbox(
+                    "Your location",
+                    options=list(doha_locations.keys()),
+                    key='current_location_select'
+                )
+                
+            with col4:
+                show_route = st.checkbox("Show route", value=False)
+            
+            # Get selected location details
+            location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
+            resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
+            
+            # Display compact location details with status
+            occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
+            status_class = (
+                "status-active" if occupancy_percentage < 60 
+                else "status-busy" if occupancy_percentage < 90 
+                else "status-full"
+            )
+            
+            st.markdown(f"""
+                <div class="stats-box {status_class}">
+                    <div style="display: flex; justify-content: space-between; align-items: top;">
+                        <div style="flex: 2;">
+                            <h3>{location_info['name']}</h3>
+                            <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
+                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
+                            ({occupancy_percentage:.1f}%)</p>
+                            <p>💧 Water: {resources_info['water_supply']} units | 
+                            🍲 Food: {resources_info['food_supply']} units | 
+                            🏥 Medical: {resources_info['medical_kits']} kits</p>
+                        </div>
                     </div>
                 </div>
-            """
+            """, unsafe_allow_html=True)
             
-            folium.Marker(
-                [shelter["lat"], shelter["lon"]],
-                popup=folium.Popup(popup_html, max_width=300),
-                icon=folium.Icon(color=color)
-            ).add_to(m)
-        
-        st_folium(m, width=None, height=400)
-        
-        # Resources Grid
-        st.markdown("<h3>📦 Available Resources</h3>", unsafe_allow_html=True)
-        cols = st.columns(3)
-        
-        for idx, (_, resource) in enumerate(resources_df.iterrows()):
-            with cols[idx % 3]:
-                st.markdown(f"""
-                    <div class='stats-box'>
-                        <h3>{resource['location']}</h3>
-                        <p>💧 Water: {resource['water_supply']} units</p>
-                        <p>🍲 Food: {resource['food_supply']} units</p>
-                        <p>🏥 Medical: {resource['medical_kits']} kits</p>
-                        <p>⚡ Power: {resource['generators']} generators</p>
-                        <p>🛏️ Beds: {resource['beds']}</p>
-                        <p><small>Updated: {resource['last_updated']}</small></p>
+            # Map Block (Bottom)
+            m = folium.Map(
+                location=doha_locations[current_location],  # Center map on selected current location
+                zoom_start=12,
+                tiles="cartodbpositron"
+            )
+            
+            # Add markers for all locations
+            for idx, location in filtered_df.iterrows():
+                color = {
+                    'Primary': 'red',
+                    'Secondary': 'blue'
+                }.get(location['type'], 'gray')
+                
+                occupancy = (location['current'] / location['capacity']) * 100
+                resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                
+                popup_content = f"""
+                    <div style="width: 200px">
+                        <h4>{location['name']}</h4>
+                        <p><b>Type:</b> {location['type']}</p>
+                        <p><b>Contact:</b> {location['contact']}</p>
+                        <p><b>Occupancy:</b> {occupancy:.1f}%</p>
+                        <p><b>Resources:</b></p>
+                        <ul>
+                            <li>Water: {resources['water_supply']} units</li>
+                            <li>Food: {resources['food_supply']} units</li>
+                            <li>Medical: {resources['medical_kits']} kits</li>
+                        </ul>
                     </div>
-                """, unsafe_allow_html=True)
+                """
+                
+                marker = folium.Marker(
+                    location=[location['lat'], location['lon']],
+                    popup=folium.Popup(popup_content, max_width=300),
+                    icon=folium.Icon(color=color, icon='info-sign'),
+                )
+                marker.add_to(m)
+            
+            # Add routing if requested
+            if show_route:
+                try:
+                    # Get coordinates for selected current location
+                    user_location = doha_locations[current_location]
+                    
+                    # Add user location marker
+                    folium.Marker(
+                        location=user_location,
+                        popup=f"Your Location ({current_location})",
+                        icon=folium.Icon(color='green', icon='info-sign')
+                    ).add_to(m)
+
+                    # Calculate route using OpenRouteService
+                    coordinates = [
+                        [user_location[1], user_location[0]],  # Current location (lon, lat)
+                        [location_info['lon'], location_info['lat']]  # Destination (lon, lat)
+                    ]
+                    
+                    route = ors_client.directions(
+                        coordinates=coordinates,
+                        profile='driving-car',
+                        format='geojson'
+                    )
+
+                    # Extract and convert route coordinates
+                    route_coords = [[coord[1], coord[0]] for coord in route['features'][0]['geometry']['coordinates']]
+                    
+                    # Add route to map
+                    folium.PolyLine(
+                        locations=route_coords,
+                        weight=4,
+                        color='green',
+                        opacity=0.8,
+                        tooltip='Route to Location'
+                    ).add_to(m)
+
+                    # Fit map bounds to show route
+                    m.fit_bounds([user_location, [location_info['lat'], location_info['lon']]])
+                    
+                    # Show route details
+                    duration_minutes = route['features'][0]['properties']['segments'][0]['duration'] / 60
+                    distance_km = route['features'][0]['properties']['segments'][0]['distance'] / 1000
+                    
+                    st.markdown(f"""
+                        <div class="route-info">
+                            <h4>🚗 Route Information:</h4>
+                            <p>📍 From: {current_location}</p>
+                            <p>🎯 To: {location_info['name']}</p>
+                            <p>⏱️ Estimated Time: {duration_minutes:.1f} minutes</p>
+                            <p>📏 Distance: {distance_km:.1f} km</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                except Exception as e:
+                    st.error(f"Error calculating route: {str(e)}")
+            
+            # Display the map
+            st_folium(m, height=500)
 
     # Inside Tab 3 (Social Updates)
     with tab3:
