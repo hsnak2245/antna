@@ -296,3 +296,32 @@ section[data-testid="stSidebar"] .block-container {
 ::-webkit-scrollbar-thumb:hover {
     background: #00f5d4;
 }
+
+
+
+/* Style for the recording button */
+button[aria-label="🎙️ Voice Input"] {
+    background: linear-gradient(135deg, #FF0000, #FF5757) !important;
+    color: white !important;
+    font-family: 'Space Mono', monospace !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    border-radius: 50px !important;
+    padding: 12px 20px !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 10px rgba(255, 0, 0, 0.5) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Hover effect for the recording button */
+button[aria-label="🎙️ Voice Input"]:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 15px rgba(255, 0, 0, 0.7) !important;
+}
+
+/* Active (pressed) effect for the recording button */
+button[aria-label="🎙️ Voice Input"]:active {
+    transform: scale(1.0) !important;
+    box-shadow: 0 4px 10px rgba(255, 0, 0, 0.5) !important;
+}
