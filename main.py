@@ -10,6 +10,7 @@ from audio_recorder_streamlit import audio_recorder
 import tempfile
 import os
 import warnings
+import openrouteservice
 warnings.filterwarnings('ignore')
 # Page config must be the first Streamlit command
 st.set_page_config(
