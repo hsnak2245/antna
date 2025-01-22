@@ -36,6 +36,8 @@ Access Antna at: https://antnaa.streamlit.app
 - Downloadable emergency information
 - Most essential First aid guides and Navigation data
 
+The offline llm feature, needs some local llm installation and pratical issues, it's workin. If you have local llm, you can use the local llm feature too. Still in development
+
   
 ## Technical Requirements
 ### Dependencies
