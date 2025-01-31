@@ -168,7 +168,7 @@ def main():
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             st.markdown(f"""
             <div class="card">
-            <h3>{nearest_shelter['name']}</h3>
+            <h5>{nearest_shelter['name']}</h5>
             <p><strong>Distance:</strong> {nearest_shelter['distance']:.2f} km</p>
             </div>
             """, unsafe_allow_html=True)
@@ -178,7 +178,7 @@ def main():
             latest_alert = alerts_df.iloc[0]
             st.markdown(f"""
             <div class="card">
-            <h3>{latest_alert['type']} Alert</h3>
+            <h5>{latest_alert['type']} Alert</h5>
             <p><strong>Location:</strong> {latest_alert['location']}</p>
             </div>
             """, unsafe_allow_html=True)
@@ -188,7 +188,7 @@ def main():
             recent_update = social_updates_df.iloc[0]
             st.markdown(f"""
             <div class="card">
-            <h3>{recent_update['username']}</h3>
+            <h5>{recent_update['username']}</h5>
             <p>{recent_update['message']}</p>
             </div>
             """, unsafe_allow_html=True)
