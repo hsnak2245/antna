@@ -173,19 +173,24 @@ def main():
         _, shelters_df, resources_df, _ = generate_data()
         
         # Define common locations in Doha
-        doha_locations = {
-            "Doha City Center": [25.3548, 51.1839],
-            "West Bay": [25.3287, 51.5309],
-            "The Pearl": [25.3741, 51.5503],
-            "Katara Cultural Village": [25.3594, 51.5277],
-            "Hamad International Airport": [25.2608, 51.6138],
-            "Education City": [25.3149, 51.4400],
-            "Souq Waqif": [25.2867, 51.5333],
-            "Aspire Zone": [25.2684, 51.4481],
-            "Msheireb Downtown": [25.2897, 51.5335],
-            "Al Waab": [25.2590, 51.4782]
+    # Define affected locations in Turkey
+        turkey_eq_locations = {
+            "Gaziantep City Center": [37.0662, 37.3833],
+            "Kahramanmaraş City Center": [37.5753, 36.9228],
+            "Antakya City Center (Hatay)": [36.2025, 36.1603],
+            "Adıyaman City Center": [37.7648, 38.2786],
+            "Malatya City Center": [38.3552, 38.3095],
+            "Iskenderun Port Area": [36.5817, 36.1650],
+            "Nurdağı District (Gaziantep)": [37.1683, 36.7367],
+            "Hatay Airport": [36.3622, 36.2822],
+            "Adana Relief Coordination Center": [37.0017, 35.3289],
+            "Osmaniye Temporary Shelter Camp": [37.0742, 36.2468],
+            "Gaziantep Castle Area": [37.0658, 37.3833],
+            "Kahramanmaraş Sütçü İmam University": [37.8010, 36.9250],
+            "Hatay Medical Center": [36.5200, 36.3850],
+            "Malatya Battalgazi District": [38.4000, 38.3667],
+            "Adıyaman Fault Line Zone": [37.8500, 38.2833]
         }
-        
         # Create subtabs
         list_tab, map_tab = st.tabs(["📋 List View", "🗺️ Map View"])
         
@@ -235,7 +240,7 @@ def main():
             with col3:
                 current_location = st.selectbox(
                     "Your location",
-                    options=list(doha_locations.keys()),
+                    options=list(turkey_eq_locations.keys()),
                     key='current_location_select'
                 )
                 
