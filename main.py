@@ -152,8 +152,7 @@ def main():
         
     st.markdown("""
             <div class="title-block">
-                <h1>🐜 ANTNA</h1>
-                <p><span class="status-indicator status-active"></span>Active Monitoring</p>
+                <h3><center>ANTNA</center></h3>
             </div>
         """, unsafe_allow_html=True)
 
