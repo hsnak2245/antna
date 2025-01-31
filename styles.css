@@ -219,7 +219,7 @@ section[data-testid="stSidebar"] .block-container {
 .status-active {
     background: #00ff9d;
     box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    
 }
 
 @keyframes pulse {
