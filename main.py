@@ -474,25 +474,78 @@ def main():
         
         # Checklist in a clean container
         st.markdown("<h3>📋 Essential Items</h3>", unsafe_allow_html=True)
-        with st.container():
-            checklist_items = {
-                "Water (5L per person per day)": False,
-                "Non-perishable food": False,
-                "First aid kit": False,
-                "Portable fan/cooling devices": False,
-                "Dust masks": False,
-                "Emergency contact list": False,
-                "Portable radio": False,
-                "Power bank": False,
-                "Important documents in waterproof container": False,
-                "Sand/dust protection for electronics": False
-            }
-            
-            for item in checklist_items:
-                checklist_items[item] = st.checkbox(item)
+        
+        # Initialize checklist items
+        checklist_data = {
+            "Item": [
+                "Water (5L per person per day)",
+                "Non-perishable food",
+                "First aid kit",
+                "Portable fan/cooling devices",
+                "Dust masks",
+                "Emergency contact list",
+                "Portable radio",
+                "Power bank",
+                "Important documents in waterproof container",
+                "Sand/dust protection for electronics"
+            ],
+            "Checked": [False] * 10
+        }
+        
+        checklist_df = pd.DataFrame(checklist_data)
+        
+        # Display checklist items dynamically
+        for index, row in checklist_df.iterrows():
+            checklist_df.at[index, "Checked"] = st.checkbox(row["Item"], value=row["Checked"])
         
         # Readiness Score with visual indicator
-        readiness = sum(checklist_items.values()) / len(checklist_items) * 100
+        readiness = checklist_df["Checked"].mean() * 100
+        st.markdown("<h3>🎯 Readiness Score</h3>", unsafe_allow_html=True)
+        st.progress(readiness / 100)
+        st.markdown(f"""
+            <div class="stats-box" style="text-align: center;">
+                <h2 style="color: {'#00ff9d' if readiness > 70 else '#ffbe0b' if readiness > 40 else '#ff006e'};">
+                    {readiness:.1f}%
+                </h2>
+                <p>Preparedness Level</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # Emergency Contacts
+        st.markdown("<h3>☎️ Emergency Contacts</h3>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class="stats-box">
+                <p>🚔 <b>Police:</b> 999</p>
+                <p>🚑 <b>Ambulance:</b> 999</p>
+                <p>🚒 <b>Civil Defence:</b> 999</p>
+                <p>🏥 <b>Hamad Hospital:</b> 4439 5777</p>
+                <p>⚡ <b>Kahramaa (Utilities):</b> 991</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Quick Tips
+        with st.expander("📖 Quick Emergency Guidelines"):
+            st.markdown("""
+                <div class="stats-box">
+                    <h4>Before Emergency:</h4>
+                    - Keep important documents in a waterproof container<br>
+                    - Maintain emergency supplies<br>
+                    - Learn evacuation routes<br><br>
+                    
+                    <h4>During Emergency:</h4>
+                    - Stay informed through official channels<br>
+                    - Follow evacuation orders immediately<br>
+                    - Help others if safe to do so<br><br>
+                    
+                    <h4>After Emergency:</h4>
+                    - Check on family and neighbors<br>
+                    - Document any damage<br>
+                    - Follow official recovery guidance
+                </div>
+            """, unsafe_allow_html=True)
+        
+        # Readiness Score with visual indicator
+        readiness = checklist_df["Checked"].mean() * 100
         st.markdown("<h3>🎯 Readiness Score</h3>", unsafe_allow_html=True)
         st.progress(readiness / 100)
         st.markdown(f"""
