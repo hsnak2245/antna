@@ -131,25 +131,52 @@ def main():
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
     
     
+    
     with tab1:
-        audio_bytes = audio_recorder(
-            text="",  # Minimal text
-            recording_color="white",
-            neutral_color="red"
-        )
-        user_query = st.text_input('',placeholder= "Ask ANTNA")
+        st.markdown("""
+            <div class="modern-chat-container">
+                <div class="input-group">
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns([5, 1])
+        with col1:
+            user_query = st.text_input(
+                label="",
+                placeholder="Ask ANTNA about emergency services, resources, or alerts...",
+                label_visibility="collapsed"
+            )
+        with col2:
+            audio_bytes = audio_recorder(
+                text="",
+                recording_color="linear-gradient(45deg, #00ff9d, #00f5d4)",
+                neutral_color="#4a4a4a",
+                icon_size="1.5rem",
+                pause_threshold=2.0
+            )
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
         if user_query:
-            with st.spinner("Processing..."):
-                
+            with st.spinner("Analyzing situation..."):
                 response = process_query_with_rag(user_query, social_updates_df)
                 
-                # Display the AI response
                 st.markdown(f"""
-                    <div class="ai-response">
-                        <strong>ANTNA:</strong><br>{response}
+                    <div class="modern-response">
+                        <div class="response-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#00ff9d">
+                                <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
+                                <path d="M11 11h2v6h-2zm0-4h2v2h-2z"/>
+                            </svg>
+                            <strong>ANTNA Analysis</strong>
+                        </div>
+                        <div class="response-content">
+                            {response}
+                        </div>
                     </div>
                 """, unsafe_allow_html=True)
-                
+
+        st.markdown("</div>", unsafe_allow_html=True)
+        
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
