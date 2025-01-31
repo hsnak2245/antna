@@ -44,7 +44,8 @@ except:
 
 
 # Add your ORS API Key here
-ORS_API_KEY = "5b3ce3597851110001cf6248103965714d2b49cead7eb8d2e234f3e6"
+
+ORS_API_KEY = st.secrets["ORS_API_KEY"]
 ors_client = openrouteservice.Client(key=ORS_API_KEY)  # Initialize ORS client
 
 
