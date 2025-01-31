@@ -59,12 +59,8 @@ ORS_API_KEY = st.secrets["ORS_API_KEY"]
 ors_client = openrouteservice.Client(key=ORS_API_KEY)  # Initialize ORS client
 groq_client = Groq(api_key=GROQ_API_KEY)
 
-
-
 # Get all dataframes
 alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
-
-
 
 def find_nearest_shelter(shelters_df, user_location):
     """
@@ -77,8 +73,6 @@ def find_nearest_shelter(shelters_df, user_location):
     )
     nearest_shelter = shelters_df.loc[shelters_df["distance"].idxmin()]
     return nearest_shelter
-
-
 
 # Voice transcription function
 def process_voice_input(audio_bytes):
@@ -158,7 +152,7 @@ def main():
                 response = process_query_with_rag(user_query, social_updates_df)
                 
                 # Display the AI response
-                st.markdown(f"""
+                st.markdown("""
                     <div class="ai-response">
                         <strong>ANTNA:</strong><br>{response}
                     </div>
@@ -193,7 +187,6 @@ def main():
                 **User:** {recent_update['username']}  
                 **Message:** {recent_update['message']}  
             """)
-                
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
