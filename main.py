@@ -162,7 +162,7 @@ def main():
     
     with tab1:
 
-        user_query = st.text_input(placeholder= "Ask ANTNA")
+        user_query = st.text_input('',placeholder= "Ask ANTNA")
         if user_query:
             with st.spinner("Processing..."):
                 # Check if the query mentions medical supplies or something route-related
