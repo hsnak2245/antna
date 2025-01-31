@@ -302,6 +302,7 @@ button[aria-label="🎙️ Voice Input"] {
     transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
+
 /* Hover effect for the recording button */
 button[aria-label="🎙️ Voice Input"]:hover {
     transform: scale(1.1) !important;
