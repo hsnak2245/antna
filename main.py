@@ -161,7 +161,7 @@ def main():
                 """, unsafe_allow_html=True)
         # Display essential information in a compact grid
         col1, col2, col3 = st.columns(3)
-            
+        
         with col1:
             # Nearest Shelter Card
             g = geocoder.ip('me')
@@ -169,20 +169,20 @@ def main():
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             
             st.markdown(f"""
-            <div class="info-card">
-                <div class="card-header">
-                    <span class="status-indicator status-active"></span>
-                    🏥 Nearest Shelter
+            <div class="info-card" style="height: 100%;">
+            <div class="card-header">
+                <span class="status-indicator status-active"></span>
+                🏥 Nearest Shelter
+            </div>
+            <div class="card-content">
+                <strong>{nearest_shelter['name']}</strong>
+                <p style="margin: 10px 0;">
+                <i class="fas fa-map-marker-alt"></i> Distance: {nearest_shelter['distance']:.2f} km
+                </p>
+                <div style="font-size: 0.8rem; color: #666;">
+                Issued {time.strftime('%H:%M')}
                 </div>
-                <div class="card-content">
-                    <strong>{nearest_shelter['name']}</strong>
-                    <p style="margin: 10px 0;">
-                        <i class="fas fa-map-marker-alt"></i> Distance: {nearest_shelter['distance']:.2f} km
-                    </p>
-                    <div style="font-size: 0.8rem; color: #666;">
-                        Issued {time.strftime('%H:%M')}
-                    </div>
-                </div>
+            </div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -192,20 +192,20 @@ def main():
             alert_status = "danger" if latest_alert['type'].lower() == 'emergency' else "warning"
             
             st.markdown(f"""
-            <div class="info-card">
-                <div class="card-header">
-                    <span class="status-indicator status-{alert_status}"></span>
-                    ⚠️ Latest Alert
+            <div class="info-card" style="height: 100%;">
+            <div class="card-header">
+                <span class="status-indicator status-{alert_status}"></span>
+                ⚠️ Latest Alert
+            </div>
+            <div class="card-content">
+                <strong>{latest_alert['type']} Alert</strong>
+                <p style="margin: 10px 0;">
+                <i class="fas fa-location-dot"></i> {latest_alert['location']}
+                </p>
+                <div style="font-size: 0.8rem; color: #666;">
+                Issued {time.strftime('%H:%M')}
                 </div>
-                <div class="card-content">
-                    <strong>{latest_alert['type']} Alert</strong>
-                    <p style="margin: 10px 0;">
-                        <i class="fas fa-location-dot"></i> {latest_alert['location']}
-                    </p>
-                    <div style="font-size: 0.8rem; color: #666;">
-                        Issued {time.strftime('%H:%M')}
-                    </div>
-                </div>
+            </div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -214,32 +214,32 @@ def main():
             recent_update = social_updates_df.iloc[0]
             
             st.markdown(f"""
-            <div class="info-card">
-                <div class="card-header">
-                    <span class="status-indicator status-active"></span>
-                    📱 Recent Update
-                </div>
-                <div class="card-content">
-                    <strong>{recent_update['username']}</strong>
-                    <p style="margin: 10px 0;">
-                        {recent_update['message'][:100]}{'...' if len(recent_update['message']) > 100 else ''}
-                    </p>
-                    <div style="font-size: 0.8rem; color: #666;">
-                        Posted {time.strftime('%H:%M')}
-                    </div>
+            <div class="info-card" style="height: 100%;">
+            <div class="card-header">
+                <span class="status-indicator status-active"></span>
+                📱 Recent Update
+            </div>
+            <div class="card-content">
+                <strong>{recent_update['username']}</strong>
+                <p style="margin: 10px 0;">
+                {recent_update['message'][:100]}{'...' if len(recent_update['message']) > 100 else ''}
+                </p>
+                <div style="font-size: 0.8rem; color: #666;">
+                Posted {time.strftime('%H:%M')}
                 </div>
             </div>
+            </div>
             """, unsafe_allow_html=True)
-    with tab2:
-        st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
-        for _, alert in alerts_df.iterrows():
-            severity_color = {
+        with tab2:
+            st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
+            for _, alert in alerts_df.iterrows():
+                severity_color = {
                 "High": "🔴", 
                 "Medium": "🟡",
                 "Low": "🟢"
-            }.get(alert["severity"], "⚪")
-            
-            st.markdown(f"""
+                }.get(alert["severity"], "⚪")
+                
+                st.markdown(f"""
                 <div class="alert-box">
                     <h4>{severity_color} {alert['type']} Alert</h4>
                     <p>📍 <b>Location:</b> {alert['location']}</p>
@@ -247,8 +247,7 @@ def main():
                     <p>⚠️ <b>Severity:</b> {alert['severity']}</p>
                     <p>ℹ️ <b>Details:</b> {alert['description']}</p>
                 </div>
-            """, unsafe_allow_html=True)
-    
+                """, unsafe_allow_html=True)
     # Centers Tab
     # Centers Tab
     with tab3:
