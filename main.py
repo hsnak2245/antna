@@ -148,14 +148,7 @@ def process_query_with_rag(query, social_updates_df):
 def main():
     alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
 
-    '''# Sidebar
-    with st.sidebar:
-        st.markdown("""
-            <div class="title-block">
-                <h1>🐜 ANTNA</h1>
-                <p><span class="status-indicator status-active"></span>Active Monitoring</p>
-            </div>
-        """, unsafe_allow_html=True)'''
+  
         
     st.markdown("""
             <div class="title-block">
