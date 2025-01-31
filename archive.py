@@ -57,4 +57,18 @@
             
             # Display the map
             st.markdown("<h4>📍 Route to Nearest Shelter with Medical Supplies</h4>", unsafe_allow_html=True)
-            st_folium(m, width=600, height=400)'''
+            st_folium(m, width=600, height=400)
+            
+            
+            
+            
+            
+            
+            add a modern ui css for this, just give the added css element for this:
+
+audio_bytes = audio_recorder(
+            text="",  # Minimal text
+            recording_color="white",
+            neutral_color="red"
+        )
+            '''
