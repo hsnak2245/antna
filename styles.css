@@ -10,10 +10,26 @@
     background-color: transparent !important;
 }
 
-.main .block-container {
-    background-color: transparent !important;
+/* Responsive container width */
+@media screen and (min-width: 1024px) {
+    .main .block-container {
+        max-width: 65% !important;
+        padding-left: 5% !important;
+        padding-right: 5% !important;
+        background-color: transparent !important;
+    }
 }
 
+/* Mobile view - default Streamlit container width */
+@media screen and (max-width: 1023px) {
+    .main .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        background-color: transparent !important;
+    }
+}
+
+/* Rest of your existing CSS */
 /* Global text styling */
 .stApp, .stMarkdown, div[data-testid="stMarkdownContainer"] p {
     font-family: 'Space Mono', monospace !important;
@@ -190,8 +206,6 @@ section[data-testid="stSidebar"] .block-container {
     overflow: hidden;
 }
 
-
-
 /* Status indicator with enhanced pulse */
 .status-indicator {
     display: inline-block;
@@ -227,8 +241,8 @@ section[data-testid="stSidebar"] .block-container {
     border-radius: 10px;
     backdrop-filter: blur(10px);
     position: relative;
-    max-width: 80%;  /* Set maximum width to 80% of parent container */
-    margin: 0 auto;  /* Center the container horizontally */
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -284,6 +298,3 @@ section[data-testid="stSidebar"] .block-container {
 ::-webkit-scrollbar-thumb:hover {
     background: #00f5d4;
 }
-
-
-
