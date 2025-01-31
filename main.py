@@ -34,6 +34,25 @@ def load_css(file_name):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 load_css('styles.css')
 
+# Define affected locations in Turkey
+turkey_eq_locations = {
+    "Gaziantep City Center": [37.0662, 37.3833],
+    "Kahramanmaraş City Center": [37.5753, 36.9228],
+    "Antakya City Center (Hatay)": [36.2025, 36.1603],
+    "Adıyaman City Center": [37.7648, 38.2786],
+    "Malatya City Center": [38.3552, 38.3095],
+    "Iskenderun Port Area": [36.5817, 36.1650],
+    "Nurdağı District (Gaziantep)": [37.1683, 36.7367],
+    "Hatay Airport": [36.3622, 36.2822],
+    "Adana Relief Coordination Center": [37.0017, 35.3289],
+    "Osmaniye Temporary Shelter Camp": [37.0742, 36.2468],
+    "Gaziantep Castle Area": [37.0658, 37.3833],
+    "Kahramanmaraş Sütçü İmam University": [37.8010, 36.9250],
+    "Hatay Medical Center": [36.5200, 36.3850],
+    "Malatya Battalgazi District": [38.4000, 38.3667],
+    "Adıyaman Fault Line Zone": [37.8500, 38.2833]
+}
+
 # Initialize keys
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 ORS_API_KEY = st.secrets["ORS_API_KEY"]
@@ -47,7 +66,7 @@ alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
 
 
 
-def find_nearest_shelter(shelters_df, user_location, query_type="medical supplies"):
+def find_nearest_shelter(shelters_df, user_location):
     """
     Find the nearest shelter to the user's location based on query type.
     """
