@@ -152,7 +152,7 @@ def main():
         
     st.markdown("""
             <div class="title-block">
-                <h2><center>antna</center></h2>
+                <h1><center>Antna</center></h1>
             </div>
         """, unsafe_allow_html=True)
 
