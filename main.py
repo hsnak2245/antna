@@ -226,22 +226,21 @@ def main():
         # List View Tab
         with list_tab:
             for idx, location in shelters_df.iterrows():
-            resources = resources_df[resources_df['location'] == location['name']].iloc[0]
-            occupancy = (location['current'] / location['capacity']) * 100
-            
-            st.markdown(f"""
-                <div class="stats-box">
-                <h3>{location['name']}</h3>
-                <p>🏥 Type: {location['type']}</p>
-                <p>📞 Contact: {location['contact']}</p>
-                <p>👥 Occupancy: {location['current']}/{location['capacity']} 
-                ({occupancy:.1f}%)</p>
-                <p>💧 Water: {resources['water_supply']} units</p>
-                <p>🍲 Food: {resources['food_supply']} units</p>
-                <p>🏥 Medical: {resources['medical_kits']} kits</p>
-                <p>🕒 Updated: {resources['last_updated']}</p>
-                </div>
-            """, unsafe_allow_html=True)
+                resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                occupancy = (location['current'] / location['capacity']) * 100
+                st.markdown(f"""
+                    <div class="stats-box">
+                    <h3>{location['name']}</h3>
+                    <p>🏥 Type: {location['type']}</p>
+                    <p>📞 Contact: {location['contact']}</p>
+                    <p>👥 Occupancy: {location['current']}/{location['capacity']} 
+                    ({occupancy:.1f}%)</p>
+                    <p>💧 Water: {resources['water_supply']} units</p>
+                    <p>🍲 Food: {resources['food_supply']} units</p>
+                    <p>🏥 Medical: {resources['medical_kits']} kits</p>
+                    <p>🕒 Updated: {resources['last_updated']}</p>
+                    </div>
+                """, unsafe_allow_html=True)
         
         # Map View Tab
         with map_tab:
