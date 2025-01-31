@@ -132,7 +132,11 @@ def main():
     
     
     with tab1:
-
+        audio_bytes = audio_recorder(
+            text="",  # Minimal text
+            recording_color="white",
+            neutral_color="red"
+        )
         user_query = st.text_input('',placeholder= "Ask ANTNA")
         if user_query:
             with st.spinner("Processing..."):
