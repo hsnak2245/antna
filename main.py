@@ -34,27 +34,18 @@ def load_css(file_name):
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 load_css('styles.css')
 
-# Initialize Groq client
-
+# Initialize keys
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-
-
-# Add your ORS API Key here
-
 ORS_API_KEY = st.secrets["ORS_API_KEY"]
 ors_client = openrouteservice.Client(key=ORS_API_KEY)  # Initialize ORS client
 
-
-'''try:
+try:
     groq_client = Groq(api_key=GROQ_API_KEY)
     st.success("Successfully initialized Groq client!")
 except Exception as e:
     st.error(f"Failed to initialize Groq client: {str(e)}")
     st.error("Please ensure GROQ_API_KEY is properly set in Streamlit Cloud secrets")
-    st.stop()'''
-# Generate simulated data
-
-
+    st.stop()
 
 # Get all dataframes
 alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
