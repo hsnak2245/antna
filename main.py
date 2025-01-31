@@ -38,14 +38,9 @@ load_css('styles.css')
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 ORS_API_KEY = st.secrets["ORS_API_KEY"]
 ors_client = openrouteservice.Client(key=ORS_API_KEY)  # Initialize ORS client
+groq_client = Groq(api_key=GROQ_API_KEY)
 
-try:
-    groq_client = Groq(api_key=GROQ_API_KEY)
-    st.success("Successfully initialized Groq client!")
-except Exception as e:
-    st.error(f"Failed to initialize Groq client: {str(e)}")
-    st.error("Please ensure GROQ_API_KEY is properly set in Streamlit Cloud secrets")
-    st.stop()
+
 
 # Get all dataframes
 alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
@@ -153,16 +148,21 @@ def process_query_with_rag(query, social_updates_df):
 def main():
     alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
 
-    # Sidebar
+    '''# Sidebar
     with st.sidebar:
         st.markdown("""
             <div class="title-block">
                 <h1>🐜 ANTNA</h1>
                 <p><span class="status-indicator status-active"></span>Active Monitoring</p>
             </div>
+        """, unsafe_allow_html=True)'''
+        
+    st.markdown("""
+            <div class="title-block">
+                <h1>🐜 ANTNA</h1>
+                <p><span class="status-indicator status-active"></span>Active Monitoring</p>
+            </div>
         """, unsafe_allow_html=True)
-        
-        
 
     # Main tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
