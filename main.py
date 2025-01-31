@@ -163,11 +163,11 @@ def main():
         """, unsafe_allow_html=True)
         
         # Voice Assistant
-        st.subheader("🎤 Voice Input")
+        st.subheader("")
         audio_bytes = audio_recorder(
-            text="🎤 Voice Input",  # Minimal text
-            recording_color="#00ff9d",
-            neutral_color="#333333"
+            text="",  # Minimal text
+            recording_color="white",
+            neutral_color="red"
         )
         
         if audio_bytes:
