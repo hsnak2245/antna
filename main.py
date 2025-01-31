@@ -229,16 +229,15 @@ def main():
                 resources = resources_df[resources_df['location'] == location['name']].iloc[0]
                 occupancy = (location['current'] / location['capacity']) * 100
                 st.markdown(f"""
-                    <div class="stats-box">
-                    <h3>{location['name']}</h3>
-                    <p>🏥 Type: {location['type']}</p>
-                    <p>📞 Contact: {location['contact']}</p>
-                    <p>👥 Occupancy: {location['current']}/{location['capacity']} 
-                    ({occupancy:.1f}%)</p>
-                    <p>💧 Water: {resources['water_supply']} units</p>
-                    <p>🍲 Food: {resources['food_supply']} units</p>
-                    <p>🏥 Medical: {resources['medical_kits']} kits</p>
-                    <p>🕒 Updated: {resources['last_updated']}</p>
+                    <div class="stats-box minimal-ui">
+                        <h3>{location['name']}</h3>
+                        <p><strong>Type:</strong> {location['type']}</p>
+                        <p><strong>Contact:</strong> {location['contact']}</p>
+                        <p><strong>Occupancy:</strong> {location['current']}/{location['capacity']} ({occupancy:.1f}%)</p>
+                        <p><strong>Water:</strong> {resources['water_supply']} units</p>
+                        <p><strong>Food:</strong> {resources['food_supply']} units</p>
+                        <p><strong>Medical:</strong> {resources['medical_kits']} kits</p>
+                        <p><strong>Updated:</strong> {resources['last_updated']}</p>
                     </div>
                 """, unsafe_allow_html=True)
         
@@ -497,52 +496,6 @@ def main():
         # Display checklist items dynamically
         for index, row in checklist_df.iterrows():
             checklist_df.at[index, "Checked"] = st.checkbox(row["Item"], value=row["Checked"])
-        
-        # Readiness Score with visual indicator
-        readiness = checklist_df["Checked"].mean() * 100
-        st.markdown("<h3>🎯 Readiness Score</h3>", unsafe_allow_html=True)
-        st.progress(readiness / 100)
-        st.markdown(f"""
-            <div class="stats-box" style="text-align: center;">
-                <h2 style="color: {'#00ff9d' if readiness > 70 else '#ffbe0b' if readiness > 40 else '#ff006e'};">
-                    {readiness:.1f}%
-                </h2>
-                <p>Preparedness Level</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Emergency Contacts
-        st.markdown("<h3>☎️ Emergency Contacts</h3>", unsafe_allow_html=True)
-        st.markdown("""
-            <div class="stats-box">
-                <p>🚔 <b>Police:</b> 999</p>
-                <p>🚑 <b>Ambulance:</b> 999</p>
-                <p>🚒 <b>Civil Defence:</b> 999</p>
-                <p>🏥 <b>Hamad Hospital:</b> 4439 5777</p>
-                <p>⚡ <b>Kahramaa (Utilities):</b> 991</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Quick Tips
-        with st.expander("📖 Quick Emergency Guidelines"):
-            st.markdown("""
-                <div class="stats-box">
-                    <h4>Before Emergency:</h4>
-                    - Keep important documents in a waterproof container<br>
-                    - Maintain emergency supplies<br>
-                    - Learn evacuation routes<br><br>
-                    
-                    <h4>During Emergency:</h4>
-                    - Stay informed through official channels<br>
-                    - Follow evacuation orders immediately<br>
-                    - Help others if safe to do so<br><br>
-                    
-                    <h4>After Emergency:</h4>
-                    - Check on family and neighbors<br>
-                    - Document any damage<br>
-                    - Follow official recovery guidance
-                </div>
-            """, unsafe_allow_html=True)
         
         # Readiness Score with visual indicator
         readiness = checklist_df["Checked"].mean() * 100
