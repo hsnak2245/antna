@@ -229,15 +229,16 @@ def main():
                 resources = resources_df[resources_df['location'] == location['name']].iloc[0]
                 occupancy = (location['current'] / location['capacity']) * 100
                 st.markdown(f"""
-                    <div class="stats-box minimal-ui">
-                        <h3>{location['name']}</h3>
-                        <p><strong>Type:</strong> {location['type']}</p>
-                        <p><strong>Contact:</strong> {location['contact']}</p>
-                        <p><strong>Occupancy:</strong> {location['current']}/{location['capacity']} ({occupancy:.1f}%)</p>
-                        <p><strong>Water:</strong> {resources['water_supply']} units</p>
-                        <p><strong>Food:</strong> {resources['food_supply']} units</p>
-                        <p><strong>Medical:</strong> {resources['medical_kits']} kits</p>
-                        <p><strong>Updated:</strong> {resources['last_updated']}</p>
+                    <div class="stats-box">
+                    <h3>{location['name']}</h3>
+                    <p>🏥 Type: {location['type']}</p>
+                    <p>📞 Contact: {location['contact']}</p>
+                    <p>👥 Occupancy: {location['current']}/{location['capacity']} 
+                    ({occupancy:.1f}%)</p>
+                    <p>💧 Water: {resources['water_supply']} units</p>
+                    <p>🍲 Food: {resources['food_supply']} units</p>
+                    <p>🏥 Medical: {resources['medical_kits']} kits</p>
+                    <p>🕒 Updated: {resources['last_updated']}</p>
                     </div>
                 """, unsafe_allow_html=True)
         
@@ -542,6 +543,8 @@ def main():
                     - Follow official recovery guidance
                 </div>
             """, unsafe_allow_html=True)
+        
+
 
 if __name__ == "__main__":
     main()
