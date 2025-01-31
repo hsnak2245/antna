@@ -277,7 +277,7 @@ def main():
             
             # Map Block (Bottom)
             m = folium.Map(
-                location=doha_locations[current_location],  # Center map on selected current location
+                location=turkey_eq_locations[current_location],  # Center map on selected current location
                 zoom_start=12,
                 tiles="cartodbpositron"
             )
@@ -318,7 +318,7 @@ def main():
             if show_route:
                 try:
                     # Get coordinates for selected current location
-                    user_location = doha_locations[current_location]
+                    user_location = turkey_eq_locations[current_location]
                     
                     # Add user location marker
                     folium.Marker(

@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-def generate_turkey_earthquake_data():
+def generate_data():
     # Base date for the February 6, 2023 earthquake
     base_date = datetime(2023, 2, 6, 4, 17)  # Actual earthquake time
     
