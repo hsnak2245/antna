@@ -297,3 +297,89 @@ section[data-testid="stSidebar"] .block-container {
 ::-webkit-scrollbar-thumb:hover {
     background: #00f5d4;
 }
+
+/* Bento Grid Styles */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(200px, auto);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.bento-cell {
+    background: rgba(26, 26, 26, 0.9);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s ease;
+}
+
+.bento-cell:hover {
+    transform: translateY(-4px);
+}
+
+.critical-alerts {
+    grid-column: span 2;
+    border-left: 6px solid #ff006e;
+}
+
+.environment {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 6px solid #00ff9d;
+}
+
+.resources {
+    grid-row: span 2;
+    border-left: 6px solid #ffbe0b;
+}
+
+.updates {
+    border-left: 6px solid #00f5d4;
+}
+
+.ant-metric {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.ant-metric .value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #00ff9d;
+    display: block;
+}
+
+.ant-alert {
+    padding: 10px;
+    margin: 8px 0;
+    background: rgba(255, 0, 110, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.severity {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Ant-inspired hexagonal patterns */
+.bento-cell::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='46' viewBox='0 0 40 46' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 11.547V34.641L20 46L0 34.641V11.547L20 0Z' fill='%23000' fill-opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    pointer-events: none;
+}
