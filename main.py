@@ -176,7 +176,6 @@ def main():
                 """, unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
-        
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
