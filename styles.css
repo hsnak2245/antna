@@ -1,9 +1,26 @@
 /* Import Space Grotesk font */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
+/* CSS Variables */
+:root {
+    --font-main: 'Space Grotesk', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --color-bg: #000000;
+    --color-text: #ffffff;
+    --color-primary: #00ff9d;
+    --color-secondary: #00f5d4;
+    --color-danger: #ff006e;
+    --color-warning: #ffbe0b;
+    --color-muted: #888888;
+    --color-dark: #1a1a1a;
+    --color-darker: #0a0a0a;
+    --color-light: rgba(255, 255, 255, 0.1);
+    --transition: all 0.2s ease;
+}
+
 /* Main theme */
 .stApp {
-    background-color: black !important;
+    background-color: var(--color-bg) !important;
 }
 
 .stApp > header {
@@ -20,7 +37,6 @@
     }
 }
 
-/* Mobile view - default Streamlit container width */
 @media screen and (max-width: 1023px) {
     .main .block-container {
         padding-left: 1rem !important;
@@ -29,42 +45,43 @@
     }
 }
 
-/* Rest of your existing CSS */
 /* Global text styling */
 .stApp, .stMarkdown, div[data-testid="stMarkdownContainer"] p {
-    font-family: 'Space Grotesk', sans-serif !important;
-    color: #ffffff !important;
+    font-family: var(--font-main) !important;
+    color: var(--color-text) !important;
 }
 
 /* Headers */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Mono', monospace !important;
-    color: #ffffff !important;
+    font-family: var(--font-mono) !important;
+    color: var(--color-text) !important;
     font-weight: 700 !important;
 }
 
 /* Custom container styles */
-.stats-box {
+.stats-box, .social-update, .ai-response, .alert-box {
     background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(32, 32, 32, 0.9));
     padding: 20px;
     border-radius: 10px;
     margin: 10px 0;
+    backdrop-filter: blur(10px);
+}
+
+.stats-box, .social-update {
     border: 1px solid rgba(51, 51, 51, 0.5);
-    backdrop-filter: blur(10px);
 }
 
-.social-update {
-    background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(32, 32, 32, 0.9));
-    padding: 16px;
-    border-radius: 12px;
-    margin: 12px 0;
-    backdrop-filter: blur(10px);
+.ai-response {
+    border-left: 4px solid var(--color-primary);
+    box-shadow: -4px 0 8px -2px rgba(0, 255, 157, 0.3);
 }
 
-.update-header {
-    margin-bottom: 12px;
+.alert-box {
+    border-left: 4px solid var(--color-danger);
+    box-shadow: -4px 0 8px -2px rgba(255, 0, 110, 0.3);
 }
 
+/* Account info */
 .account-info {
     display: flex;
     align-items: center;
@@ -72,7 +89,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .username {
-    color: #888;
+    color: var(--color-muted);
     font-size: 0.95em;
 }
 
@@ -89,14 +106,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .verified {
     background: #00ff9d33;
-    color: #00ff9d;
+    color: var(--color-primary);
 }
 
 .unverified {
     background: #ff006e33;
-    color: #ff006e;
+    color: var(--color-danger);
 }
 
+/* Update content */
 .update-content {
     margin: 12px 0;
     line-height: 1.4;
@@ -107,7 +125,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #888;
+    color: var(--color-muted);
     font-size: 0.9em;
 }
 
@@ -121,51 +139,30 @@ h1, h2, h3, h4, h5, h6 {
     color: #444;
 }
 
+/* Trust levels */
 .trust-high { 
-    border-left: 4px solid #00ff9d;
+    border-left: 4px solid var(--color-primary);
     box-shadow: -4px 0 8px -2px rgba(0, 255, 157, 0.3);
 }
 
 .trust-medium { 
-    border-left: 4px solid #ffbe0b;
+    border-left: 4px solid var(--color-warning);
     box-shadow: -4px 0 8px -2px rgba(255, 190, 11, 0.3);
 }
 
 .trust-low { 
-    border-left: 4px solid #ff006e;
+    border-left: 4px solid var(--color-danger);
     box-shadow: -4px 0 8px -2px rgba(255, 0, 110, 0.3);
-}
-
-/* AI response styling */
-.ai-response {
-    background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(32, 32, 32, 0.9));
-    padding: 20px;
-    border-radius: 10px;
-    margin: 10px 0;
-    border-left: 4px solid #00ff9d;
-    box-shadow: -4px 0 8px -2px rgba(0, 255, 157, 0.3);
-    backdrop-filter: blur(10px);
-}
-
-/* Alert styling */
-.alert-box {
-    background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(32, 32, 32, 0.9));
-    padding: 15px;
-    border-radius: 10px;
-    margin: 10px 0;
-    border-left: 4px solid #ff006e;
-    box-shadow: -4px 0 8px -2px rgba(255, 0, 110, 0.3);
-    backdrop-filter: blur(10px);
 }
 
 /* Streamlit elements override */
 .stButton>button {
-    background: linear-gradient(90deg, #00ff9d, #00f5d4) !important;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
     color: black !important;
-    font-family: 'Space Mono', monospace !important;
+    font-family: var(--font-mono) !important;
     font-weight: bold !important;
     border: none !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    transition: var(--transition) !important;
 }
 
 .stButton>button:hover {
@@ -179,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Progress bar */
 .stProgress > div > div > div {
-    background: linear-gradient(90deg, #00ff9d, #00f5d4) !important;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
     border-radius: 999px !important;
 }
 
@@ -189,8 +186,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0a0a0a, #1a1a1a) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: linear-gradient(180deg, var(--color-darker), var(--color-dark)) !important;
+    border-right: 1px solid var(--color-light) !important;
 }
 
 section[data-testid="stSidebar"] .block-container {
@@ -218,7 +215,6 @@ section[data-testid="stSidebar"] .block-container {
 
 .status-active {
     background: rgba(0, 255, 157, 0.7);
-    
 }
 
 @keyframes pulse {
@@ -246,11 +242,11 @@ section[data-testid="stSidebar"] .block-container {
 
 .stTabs [data-baseweb="tab"] {
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--color-text);
     background-color: rgba(51, 51, 51, 0.6);
     padding: 10px 20px;
-    font-family: 'Space Mono', monospace;
-    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    transition: var(--transition);
 }
 
 .stTabs [data-baseweb="tab"]:hover {
@@ -259,7 +255,7 @@ section[data-testid="stSidebar"] .block-container {
 }
 
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(90deg, #00ff9d, #00f5d4) !important;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
     color: black !important;
     font-weight: bold !important;
     transform: translateY(-2px);
@@ -269,14 +265,14 @@ section[data-testid="stSidebar"] .block-container {
 /* Input fields */
 .stTextInput input {
     background-color: rgba(51, 51, 51, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--color-light) !important;
     color: white !important;
-    font-family: 'Space Mono', monospace !important;
+    font-family: var(--font-mono) !important;
 }
 
 .stTextInput input:focus {
-    border-color: #00ff9d !important;
-    box-shadow: 0 0 0 1px #00ff9d !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 1px var(--color-primary) !important;
 }
 
 /* Scrollbar styling */
@@ -290,23 +286,25 @@ section[data-testid="stSidebar"] .block-container {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #00ff9d;
+    background: var(--color-primary);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #00f5d4;
+    background: var(--color-secondary);
 }
 
 /* Cards styling */
 .info-card {
-    background-color: rgb(53, 53, 53);
+    background-color: var(--color-bg);
     border-radius: 10px;
+    border: var(--color-secondary);
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     height: 100%;
     transition: transform 0.2s;
 }
+
 .info-card:hover {
     transform: translateY(-5px);
 }
@@ -316,7 +314,7 @@ section[data-testid="stSidebar"] .block-container {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 10px;
-    color: #1f1f1f;
+    color: var(--color-secondary);
 }
 
 /* Card content */
