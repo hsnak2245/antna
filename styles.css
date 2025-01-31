@@ -227,7 +227,7 @@ section[data-testid="stSidebar"] .block-container {
     border-radius: 10px;
     backdrop-filter: blur(10px);
     position: relative;
-    max-width: 50%;  /* Set maximum width to 80% of parent container */
+    max-width: 40%;  /* Set maximum width to 80% of parent container */
     margin: 0 auto;  /* Center the container horizontally */
 }
 
