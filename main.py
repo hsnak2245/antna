@@ -154,7 +154,7 @@ def main():
                 response = process_query_with_rag(user_query, social_updates_df)
                 
                 # Display the AI response
-                st.markdown("""
+                st.markdown(f"""
                     <div class="ai-response">
                         <strong>ANTNA:</strong><br>{response}
                     </div>
