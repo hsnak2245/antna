@@ -167,8 +167,8 @@ def main():
             user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]  # Default to Gaziantep City Center if location not found
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             st.markdown(f"""
-            <div class="card">
-            <h5>{nearest_shelter['name']}</h5>
+            <div class="card" style="font-size: 12px; color: #333;">
+            <h5 style="color: #007BFF;">{nearest_shelter['name']}</h5>
             <p><strong>Distance:</strong> {nearest_shelter['distance']:.2f} km</p>
             </div>
             """, unsafe_allow_html=True)
@@ -177,8 +177,8 @@ def main():
             st.markdown("### ⚠️ Latest Alert")
             latest_alert = alerts_df.iloc[0]
             st.markdown(f"""
-            <div class="card">
-            <h5>{latest_alert['type']} Alert</h5>
+            <div class="card" style="font-size: 12px; color: #333;">
+            <h5 style="color: #FF5733;">{latest_alert['type']} Alert</h5>
             <p><strong>Location:</strong> {latest_alert['location']}</p>
             </div>
             """, unsafe_allow_html=True)
@@ -187,8 +187,8 @@ def main():
             st.markdown("### 📱 Recent Update")
             recent_update = social_updates_df.iloc[0]
             st.markdown(f"""
-            <div class="card">
-            <h5>{recent_update['username']}</h5>
+            <div class="card" style="font-size: 12px; color: #333;">
+            <h5 style="color: #28A745;">{recent_update['username']}</h5>
             <p>{recent_update['message']}</p>
             </div>
             """, unsafe_allow_html=True)
