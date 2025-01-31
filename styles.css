@@ -217,7 +217,7 @@ section[data-testid="stSidebar"] .block-container {
 }
 
 .status-active {
-    background: #00ff9d;
+    background: #000000;
     box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
     
 }
