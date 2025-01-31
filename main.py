@@ -161,7 +161,7 @@ def main():
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.markdown("### 🏥 Nearest Shelter")
+            st.markdown("### 🏥 Nadvzearest Shelter")
             import geocoder
             g = geocoder.ip('me')
             user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]  # Default to Gaziantep City Center if location not found
