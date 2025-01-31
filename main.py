@@ -169,7 +169,7 @@ def main():
         with col1:
             st.markdown("### 🏥 Nearest Shelter")
             current_location = list(turkey_eq_locations.keys())[0]  # Define current_location
-            user_location = turkey_eq_locations[current_location]
+            user_location = turkey_eq_locations[0]
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             st.markdown(f"""
                 **Name:** {nearest_shelter['name']}  
