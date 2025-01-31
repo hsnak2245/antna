@@ -180,7 +180,7 @@ def main():
                     </div>
                 """, unsafe_allow_html=True)
     with tab2:
-        st.markdown("<h2>⚠️ Active Alerts</h2>", unsafe_allow_html=True)
+        st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
             severity_color = {
                 "High": "🔴", 
@@ -190,7 +190,7 @@ def main():
             
             st.markdown(f"""
                 <div class="alert-box">
-                    <h3>{severity_color} {alert['type']} Alert</h3>
+                    <h4>{severity_color} {alert['type']} Alert</h4>
                     <p>📍 <b>Location:</b> {alert['location']}</p>
                     <p>🕒 <b>Time:</b> {alert['time']}</p>
                     <p>⚠️ <b>Severity:</b> {alert['severity']}</p>
