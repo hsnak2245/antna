@@ -134,6 +134,11 @@ def main():
     with tab1:
 
         user_query = st.text_input('',placeholder= "Ask ANTNA")
+        audio_bytes = audio_recorder(
+            text="",  # Minimal text
+            recording_color="white",
+            neutral_color="red"
+        )
         if user_query:
             with st.spinner("Processing..."):
                 
@@ -145,6 +150,7 @@ def main():
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
+                
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
