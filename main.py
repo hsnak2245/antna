@@ -119,62 +119,72 @@ def process_query_with_rag(query, social_updates_df):
 def main():
     alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
 
-  
-        
     st.markdown("""
-            <div class="title-block">
-                <h1><center>ANTNA</center></h1>
-            </div>
-        """, unsafe_allow_html=True)
+        <div class="title-block">
+            <h1><center>ANTNA</center></h1>
+        </div>
+    """, unsafe_allow_html=True)
 
     # Main tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
-    
-    
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Home", "⚠️ Alerts", "🗺️ Map", "📈 Status", "📦 Prep"])
     
     with tab1:
-        st.markdown("""
-            <div class="modern-chat-container">
-                <div class="input-group">
-        """, unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([5, 1])
-        with col1:
-            user_query = st.text_input(
-                label="",
-                placeholder="Ask ANTNA about emergency services, resources, or alerts...",
-                label_visibility="collapsed"
-            )
-        with col2:
-            audio_bytes = audio_recorder(
-                text="",
-                recording_color="linear-gradient(45deg, #00ff9d, #00f5d4)",
-                neutral_color="#4a4a4a",
-                pause_threshold=2.0
-            )
+        # Voice input column
+        col_voice, col_input = st.columns([0.1, 0.9])
+        with col_voice:
+            audio_bytes = audio_recorder(pause_threshold=3.0)
+        with col_input:
+            user_query = st.text_input('', placeholder="Ask ANTNA or record audio", key="main_input")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Process voice input
+        if audio_bytes:
+            with st.spinner("Transcribing..."):
+                user_query = process_voice_input(audio_bytes)
+                if user_query:
+                    st.session_state.main_input = user_query
 
         if user_query:
-            with st.spinner("Analyzing situation..."):
+            with st.spinner("Analyzing..."):
                 response = process_query_with_rag(user_query, social_updates_df)
-                
                 st.markdown(f"""
-                    <div class="modern-response">
-                        <div class="response-header">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#00ff9d">
-                                <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
-                                <path d="M11 11h2v6h-2zm0-4h2v2h-2z"/>
-                            </svg>
-                            <strong>ANTNA Analysis</strong>
-                        </div>
-                        <div class="response-content">
-                            {response}
-                        </div>
+                    <div class="ai-response">
+                        <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Bento Grid
+        st.markdown("""
+        <div class="bento-grid">
+            <div class="bento-cell critical-alerts">
+                <h3>🚨 Critical Alerts</h3>
+                {alerts_content}
+            </div>
+            <div class="bento-cell environment">
+                <h3>🌡️ Environment</h3>
+                <div class="ant-metric">
+                    <span class="value">62°F</span>
+                    <span class="label">Doha Temp</span>
+                </div>
+                <div class="ant-metric">
+                    <span class="value">25%</span>
+                    <span class="label">Humidity</span>
+                </div>
+            </div>
+            <div class="bento-cell resources">
+                <h3>📦 Resource Status</h3>
+                {resources_content}
+            </div>
+            <div class="bento-cell updates">
+                <h3>📡 Live Updates</h3>
+                {updates_content}
+            </div>
+        </div>
+        """.format(
+            alerts_content="\n".join([f"<div class='ant-alert'><span class='severity'>{row['severity'][0]}</span>{row['description']}</div>" for _, row in alerts_df.head(3).iterrows()]),
+            resources_content="\n".join([f"<div class='ant-resource'><div class='resource-bar' style='width: {row['quantity']}%'></div>{row['name']}</div>" for _, row in resources_df.head(3).iterrows()]),
+            updates_content="\n".join([f"<div class='ant-update'>{row['message']}</div>" for _, row in social_updates_df.head(2).iterrows()])
+        ), unsafe_allow_html=True)
+                
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
