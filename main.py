@@ -168,8 +168,10 @@ def main():
         
         with col1:
             st.markdown("### 🏥 Nearest Shelter")
-            current_location = list(turkey_eq_locations.keys())[0]  # Define current_location
-            user_location = turkey_eq_locations[0]
+            import geocoder
+            g = geocoder.ip('me')
+            user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]  # Default to Gaziantep City Center if location not found
+            current_location = "Your Location"
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             st.markdown(f"""
                 **Name:** {nearest_shelter['name']}  
