@@ -150,7 +150,6 @@ def main():
                 text="",
                 recording_color="linear-gradient(45deg, #00ff9d, #00f5d4)",
                 neutral_color="#4a4a4a",
-                icon_size="1.5rem",
                 pause_threshold=2.0
             )
 
