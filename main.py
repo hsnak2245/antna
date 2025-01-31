@@ -179,7 +179,9 @@ def main():
                     <p style="margin: 10px 0;">
                         <i class="fas fa-map-marker-alt"></i> Distance: {nearest_shelter['distance']:.2f} km
                     </p>
-
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Issued {time.strftime('%H:%M')}
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
