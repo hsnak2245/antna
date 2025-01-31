@@ -298,3 +298,30 @@ section[data-testid="stSidebar"] .block-container {
     background: #00f5d4;
 }
 
+/* Cards styling */
+.info-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.2s;
+}
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Card headers */
+.card-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1f1f1f;
+}
+
+/* Card content */
+.card-content {
+    font-size: 0.9rem;
+    color: #484848;
+    line-height: 1.5;
+}
