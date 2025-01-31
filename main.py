@@ -59,35 +59,6 @@ def find_nearest_shelter(shelters_df, user_location, query_type="medical supplie
     nearest_shelter = shelters_df.loc[shelters_df["distance"].idxmin()]
     return nearest_shelter
 
-def process_query_with_rag_and_map(query, social_updates_df, shelters_df):
-    try:
-        relevant_updates = social_updates_df[
-            social_updates_df['message'].str.contains('|'.join(query.split()), case=False, na=False)
-        ]
-        context = "\n".join(relevant_updates['message'].tolist())
-        
-        messages = [
-            {"role": "system", "content": """You are ANTNA, an AI assistant for emergency management in Qatar. 
-            Provide clear, accurate information based on available data and social media updates."""},
-            {"role": "user", "content": f"Context from verified social media:\n{context}\n\nUser Question: {query}"}
-        ]
-        
-        response_text = ""
-        try:
-            response = groq_client.chat.completions.create(
-                messages=messages,
-                model="mixtral-8x7b-32768",
-                temperature=0.7,
-                max_tokens=500,
-                top_p=0.9
-            )
-            response_text = response.choices[0].message.content
-        except Exception as e:
-            response_text = f"AI processing error: {str(e)}"
-        
-        return response_text
-    except Exception as e:
-        return f"Error processing query: {str(e)}"
 
 
 # Voice transcription function
@@ -125,7 +96,7 @@ def process_query_with_rag(query, social_updates_df):
         context = "\n".join(relevant_updates['message'].tolist())
         
         messages = [
-            {"role": "system", "content": """You are ANTNA, an AI assistant for emergency management in Qatar. 
+            {"role": "system", "content": """You are ANTNA, an AI assistant for emergency management in turkey earthquake. 
              Provide clear, accurate information based on available data and social media updates."""},
             {"role": "user", "content": f"Context from verified social media:\n{context}\n\nUser Question: {query}"}
         ]
@@ -165,13 +136,8 @@ def main():
         user_query = st.text_input('',placeholder= "Ask ANTNA")
         if user_query:
             with st.spinner("Processing..."):
-                # Check if the query mentions medical supplies or something route-related
-                if "medical supplies" in user_query.lower():
-                    # Call the map-generating function for medical supplies
-                    response = process_query_with_rag_and_map(user_query, social_updates_df, shelters_df)
-                else:
-                    # Call the standard RAG function for other queries
-                    response = process_query_with_rag(user_query, social_updates_df)
+                
+                response = process_query_with_rag(user_query, social_updates_df)
                 
                 # Display the AI response
                 st.markdown(f"""
