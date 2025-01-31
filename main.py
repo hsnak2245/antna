@@ -162,6 +162,13 @@ def main():
             </div>
         """, unsafe_allow_html=True)
         
+        
+
+    # Main tabs
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
+    
+    
+    with tab1:
         # Voice Assistant
         st.subheader("")
         audio_bytes = audio_recorder(
@@ -200,12 +207,7 @@ def main():
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
-
-    # Main tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
-    
-    # Alerts Tab
-    with tab1:
+    with tab2:
         st.markdown("<h2>⚠️ Active Alerts</h2>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
             severity_color = {
@@ -226,7 +228,7 @@ def main():
     
     # Centers Tab
     # Centers Tab
-    with tab2:
+    with tab3:
         st.markdown("<h2>🏥 Critical Locations</h2>", unsafe_allow_html=True)
         
         # Get the data
@@ -434,7 +436,7 @@ def main():
             st_folium(m, height=500)
 
     # Inside Tab 3 (Social Updates)
-    with tab3:
+    with tab4:
         st.markdown("<h2>📱 Live Updates</h2>", unsafe_allow_html=True)
         
         col1, col2 = st.columns([2,3])
@@ -499,7 +501,7 @@ def main():
 
     
     # Preparation Tab
-    with tab4:
+    with tab5:
         st.markdown("<h2>✅ Emergency Preparedness</h2>", unsafe_allow_html=True)
         
         # Checklist in a clean container
