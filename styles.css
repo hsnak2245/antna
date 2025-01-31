@@ -3,7 +3,7 @@
 
 /* Main theme */
 .stApp {
-    background: linear-gradient(135deg, #1a1a1a  100%, #1a1a1a 100%) !important;
+    background-color: black !important;
 }
 
 .stApp > header {
