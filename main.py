@@ -159,37 +159,73 @@ def main():
                 """, unsafe_allow_html=True)
         # Display essential information in a compact grid
         col1, col2, col3 = st.columns(3)
-        
+            
         with col1:
-            st.markdown("### 🏥 Nadvzearest Shelter")
-            import geocoder
+            # Nearest Shelter Card
             g = geocoder.ip('me')
-            user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]  # Default to Gaziantep City Center if location not found
+            user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
+            
             st.markdown(f"""
-            <div class="card" style="font-size: 12px; color: #333;">
-            <h5 style="color: #007BFF;">{nearest_shelter['name']}</h5>
-            <p><strong>Distance:</strong> {nearest_shelter['distance']:.2f} km</p>
+            <div class="info-card">
+                <div class="card-header">
+                    <span class="status-indicator status-active"></span>
+                    🏥 Nearest Shelter
+                </div>
+                <div class="card-content">
+                    <strong>{nearest_shelter['name']}</strong>
+                    <p style="margin: 10px 0;">
+                        <i class="fas fa-map-marker-alt"></i> Distance: {nearest_shelter['distance']:.2f} km
+                    </p>
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Updated {time.strftime('%H:%M')}
+                    </div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
-            st.markdown("### ⚠️ Latest Alert")
+            # Latest Alert Card
             latest_alert = alerts_df.iloc[0]
+            alert_status = "danger" if latest_alert['type'].lower() == 'emergency' else "warning"
+            
             st.markdown(f"""
-            <div class="card" style="font-size: 12px; color: #333;">
-            <h5 style="color: #FF5733;">{latest_alert['type']} Alert</h5>
-            <p><strong>Location:</strong> {latest_alert['location']}</p>
+            <div class="info-card">
+                <div class="card-header">
+                    <span class="status-indicator status-{alert_status}"></span>
+                    ⚠️ Latest Alert
+                </div>
+                <div class="card-content">
+                    <strong>{latest_alert['type']} Alert</strong>
+                    <p style="margin: 10px 0;">
+                        <i class="fas fa-location-dot"></i> {latest_alert['location']}
+                    </p>
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Issued {time.strftime('%H:%M')}
+                    </div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
         
         with col3:
-            st.markdown("### 📱 Recent Update")
+            # Recent Update Card
             recent_update = social_updates_df.iloc[0]
+            
             st.markdown(f"""
-            <div class="card" style="font-size: 12px; color: #333;">
-            <h5 style="color: #28A745;">{recent_update['username']}</h5>
-            <p>{recent_update['message']}</p>
+            <div class="info-card">
+                <div class="card-header">
+                    <span class="status-indicator status-active"></span>
+                    📱 Recent Update
+                </div>
+                <div class="card-content">
+                    <strong>{recent_update['username']}</strong>
+                    <p style="margin: 10px 0;">
+                        {recent_update['message'][:100]}{'...' if len(recent_update['message']) > 100 else ''}
+                    </p>
+                    <div style="font-size: 0.8rem; color: #666;">
+                        Posted {time.strftime('%H:%M')}
+                    </div>
+                </div>
             </div>
             """, unsafe_allow_html=True)
     with tab2:
