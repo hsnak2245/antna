@@ -226,7 +226,11 @@ section[data-testid="stSidebar"] .block-container {
     padding: 10px;
     border-radius: 10px;
     backdrop-filter: blur(10px);
-    position: center;
+    position: relative;
+    max-width: 80%;  /* Set maximum width to 80% of parent container */
+    margin: 0 auto;  /* Center the container horizontally */
+    left: 50%;      /* Position from the left edge */
+    transform: translateX(-50%); /* Center adjust based on element's width */
 }
 
 .stTabs [data-baseweb="tab"] {
