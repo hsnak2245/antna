@@ -229,8 +229,8 @@ section[data-testid="stSidebar"] .block-container {
     position: relative;
     max-width: 80%;  /* Set maximum width to 80% of parent container */
     margin: 0 auto;  /* Center the container horizontally */
-    left: 50%;      /* Position from the left edge */
-    transform: translateX(-50%); /* Center adjust based on element's width */
+    left: 30%; 
+    right: 30%     /* Position from the left edge */
 }
 
 .stTabs [data-baseweb="tab"] {
