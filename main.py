@@ -157,7 +157,7 @@ def main():
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
-        # Display essential information in a 3x1 grid
+        # Display essential information in a compact grid
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -165,28 +165,27 @@ def main():
             import geocoder
             g = geocoder.ip('me')
             user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]  # Default to Gaziantep City Center if location not found
-            current_location = "Your Location"
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
             st.markdown(f"""
-                **Name:** {nearest_shelter['name']}  
-                **Distance:** {nearest_shelter['distance']:.2f} km  
-            """)
+            **Name:** {nearest_shelter['name']}  
+            **Distance:** {nearest_shelter['distance']:.2f} km  
+            """, unsafe_allow_html=True)
         
         with col2:
             st.markdown("### ⚠️ Latest Alert")
             latest_alert = alerts_df.iloc[0]
             st.markdown(f"""
-                **Type:** {latest_alert['type']}  
-                **Location:** {latest_alert['location']}  
-            """)
+            **Type:** {latest_alert['type']}  
+            **Location:** {latest_alert['location']}  
+            """, unsafe_allow_html=True)
         
         with col3:
             st.markdown("### 📱 Recent Update")
             recent_update = social_updates_df.iloc[0]
             st.markdown(f"""
-                **User:** {recent_update['username']}  
-                **Message:** {recent_update['message']}  
-            """)
+            **User:** {recent_update['username']}  
+            **Message:** {recent_update['message']}  
+            """, unsafe_allow_html=True)
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
         for _, alert in alerts_df.iterrows():
