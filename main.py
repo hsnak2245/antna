@@ -144,33 +144,33 @@ def main():
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
-                # Display essential information in a 3x1 grid
-                col1, col2, col3 = st.columns(3)
-                
-                with col1:
-                    st.markdown("### 🏥 Nearest Shelter")
-                    user_location = turkey_eq_locations[current_location]
-                    nearest_shelter = find_nearest_shelter(shelters_df, user_location)
-                    st.markdown(f"""
-                        **Name:** {nearest_shelter['name']}  
-                        **Distance:** {nearest_shelter['distance']:.2f} km  
-                    """)
-                
-                with col2:
-                    st.markdown("### ⚠️ Latest Alert")
-                    latest_alert = alerts_df.iloc[0]
-                    st.markdown(f"""
-                        **Type:** {latest_alert['type']}  
-                        **Location:** {latest_alert['location']}  
-                    """)
-                
-                with col3:
-                    st.markdown("### 📱 Recent Update")
-                    recent_update = social_updates_df.iloc[0]
-                    st.markdown(f"""
-                        **User:** {recent_update['username']}  
-                        **Message:** {recent_update['message']}  
-                    """)
+        # Display essential information in a 3x1 grid
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("### 🏥 Nearest Shelter")
+            user_location = turkey_eq_locations[current_location]
+            nearest_shelter = find_nearest_shelter(shelters_df, user_location)
+            st.markdown(f"""
+                **Name:** {nearest_shelter['name']}  
+                **Distance:** {nearest_shelter['distance']:.2f} km  
+            """)
+        
+        with col2:
+            st.markdown("### ⚠️ Latest Alert")
+            latest_alert = alerts_df.iloc[0]
+            st.markdown(f"""
+                **Type:** {latest_alert['type']}  
+                **Location:** {latest_alert['location']}  
+            """)
+        
+        with col3:
+            st.markdown("### 📱 Recent Update")
+            recent_update = social_updates_df.iloc[0]
+            st.markdown(f"""
+                **User:** {recent_update['username']}  
+                **Message:** {recent_update['message']}  
+            """)
                 
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
