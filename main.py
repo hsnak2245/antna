@@ -119,71 +119,58 @@ def process_query_with_rag(query, social_updates_df):
 def main():
     alerts_df, shelters_df, resources_df, social_updates_df = generate_data()
 
+  
+        
     st.markdown("""
-        <div class="title-block">
-            <h1><center>ANTNA</center></h1>
-        </div>
-    """, unsafe_allow_html=True)
+            <div class="title-block">
+                <h1><center>ANTNA</center></h1>
+            </div>
+        """, unsafe_allow_html=True)
 
     # Main tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Home", "⚠️ Alerts", "🗺️ Map", "📈 Status", "📦 Prep"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
+    
     
     with tab1:
-        # Voice input column
-        col_voice, col_input = st.columns([0.1, 0.9])
-        with col_voice:
-            audio_bytes = audio_recorder(pause_threshold=3.0)
-        with col_input:
-            user_query = st.text_input('', placeholder="Ask ANTNA or record audio", key="main_input")
-
-        # Process voice input
-        if audio_bytes:
-            with st.spinner("Transcribing..."):
-                user_query = process_voice_input(audio_bytes)
-                if user_query:
-                    st.session_state.main_input = user_query
-
+        user_query = st.text_input('',placeholder= "Ask ANTNA")
         if user_query:
-            with st.spinner("Analyzing..."):
+            with st.spinner("Processing..."):
+                
                 response = process_query_with_rag(user_query, social_updates_df)
+                
+                # Display the AI response
                 st.markdown(f"""
                     <div class="ai-response">
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
-
-        # Bento Grid
-        st.markdown("""
-        <div class="bento-grid">
-            <div class="bento-cell critical-alerts">
-                <h3>🚨 Critical Alerts</h3>
-                {alerts_content}
-            </div>
-            <div class="bento-cell environment">
-                <h3>🌡️ Environment</h3>
-                <div class="ant-metric">
-                    <span class="value">62°F</span>
-                    <span class="label">Doha Temp</span>
-                </div>
-                <div class="ant-metric">
-                    <span class="value">25%</span>
-                    <span class="label">Humidity</span>
-                </div>
-            </div>
-            <div class="bento-cell resources">
-                <h3>📦 Resource Status</h3>
-                {resources_content}
-            </div>
-            <div class="bento-cell updates">
-                <h3>📡 Live Updates</h3>
-                {updates_content}
-            </div>
-        </div>
-        """.format(
-            alerts_content="\n".join([f"<div class='ant-alert'><span class='severity'>{row['severity'][0]}</span>{row['description']}</div>" for _, row in alerts_df.head(3).iterrows()]),
-            resources_content="\n".join([f"<div class='ant-resource'><div class='resource-bar' style='width: {row['quantity']}%'></div>{row['name']}</div>" for _, row in resources_df.head(3).iterrows()]),
-            updates_content="\n".join([f"<div class='ant-update'>{row['message']}</div>" for _, row in social_updates_df.head(2).iterrows()])
-        ), unsafe_allow_html=True)
+                # Display essential information in a 3x1 grid
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("### 🏥 Nearest Shelter")
+                    user_location = turkey_eq_locations[current_location]
+                    nearest_shelter = find_nearest_shelter(shelters_df, user_location)
+                    st.markdown(f"""
+                        **Name:** {nearest_shelter['name']}  
+                        **Distance:** {nearest_shelter['distance']:.2f} km  
+                    """)
+                
+                with col2:
+                    st.markdown("### ⚠️ Latest Alert")
+                    latest_alert = alerts_df.iloc[0]
+                    st.markdown(f"""
+                        **Type:** {latest_alert['type']}  
+                        **Location:** {latest_alert['location']}  
+                    """)
+                
+                with col3:
+                    st.markdown("### 📱 Recent Update")
+                    recent_update = social_updates_df.iloc[0]
+                    st.markdown(f"""
+                        **User:** {recent_update['username']}  
+                        **Message:** {recent_update['message']}  
+                    """)
                 
     with tab2:
         st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
