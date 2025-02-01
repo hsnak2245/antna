@@ -232,7 +232,7 @@ section[data-testid="stSidebar"] .block-container {
 /* Tab styling with hover effects */
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px;
-    background-color: rgba(26, 26, 26, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     padding: 10px;
     border-radius: 10px;
     backdrop-filter: blur(10px);
@@ -257,7 +257,6 @@ section[data-testid="stSidebar"] .block-container {
 
 .stTabs [aria-selected="true"] {
     background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
-    color: black !important;
     color: black !important;
     font-weight: bold !important;
     transform: translateY(-2px);
