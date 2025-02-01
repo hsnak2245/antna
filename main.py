@@ -230,8 +230,8 @@ def main():
             </div>
             </div>
             """, unsafe_allow_html=True)
-        with tab2:
-             st.markdown("<h2>📱 Live Updates</h2>", unsafe_allow_html=True)
+    with tab2:
+        st.markdown("<h2>📱 Live Updates</h2>", unsafe_allow_html=True)
         
         col1, col2 = st.columns([2,3])
         with col1:
