@@ -359,8 +359,7 @@ def main():
                         <div style="flex: 2;">
                             <h3>{location_info['name']}</h3>
                             <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
-                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
-                            ({occupancy_percentage:.1f}%)</p>
+                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} </p>
                             <p>💧 Water: {resources_info['water_supply']} units | 
                             🍲 Food: {resources_info['food_supply']} units | 
                             🏥 Medical: {resources_info['medical_kits']} kits</p>
