@@ -345,6 +345,7 @@ def main():
         with col2:
             # Information Block (Right)
             location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
+            resources_info = resources_df[resources_df['shelter_name'] == selected_location].iloc[0]
             occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
             status_class = (
                 "status-active" if occupancy_percentage < 60 
