@@ -147,27 +147,22 @@ def main():
     
     
     with tab1:
-        user_query = st.text_input('',placeholder= "Ask ANTNA")
+        user_query = st.text_input('', placeholder="Ask ANTNA")
         if user_query:
             with st.spinner("Processing..."):
-                
                 response = process_query_with_rag(user_query, social_updates_df)
-                
-                # Display the AI response
                 st.markdown(f"""
                     <div class="ai-response">
                         <strong>ANTNA:</strong><br>{response}
                     </div>
                 """, unsafe_allow_html=True)
-        # Display essential information in a compact grid
+
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            # Nearest Shelter Card
             g = geocoder.ip('me')
             user_location = [g.latlng[0], g.latlng[1]] if g.latlng else [37.0662, 37.3833]
             nearest_shelter = find_nearest_shelter(shelters_df, user_location)
-            
             st.markdown(f"""
             <div class="info-card" style="height: 100%;">
             <div class="card-header">
@@ -187,10 +182,8 @@ def main():
             """, unsafe_allow_html=True)
         
         with col2:
-            # Latest Alert Card
             latest_alert = alerts_df.iloc[0]
             alert_status = "danger" if latest_alert['type'].lower() == 'emergency' else "warning"
-            
             st.markdown(f"""
             <div class="info-card" style="height: 100%;">
             <div class="card-header">
@@ -210,9 +203,7 @@ def main():
             """, unsafe_allow_html=True)
         
         with col3:
-            # Recent Update Card
             recent_update = social_updates_df.iloc[0]
-            
             st.markdown(f"""
             <div class="info-card" style="height: 100%;">
             <div class="card-header">
@@ -230,10 +221,11 @@ def main():
             </div>
             </div>
             """, unsafe_allow_html=True)
+
     with tab2:
         st.markdown("<h2>📱 Live Updates</h2>", unsafe_allow_html=True)
         
-        col1, col2 = st.columns([2,3])
+        col1, col2 = st.columns([2, 3])
         with col1:
             min_trust_score = st.slider("Trust Score Filter", 0.0, 1.0, 0.7, 0.1)
         with col2:
@@ -243,23 +235,18 @@ def main():
                 default=social_updates_df['account_type'].unique()
             )
         
-        # Filter updates
         filtered_updates = social_updates_df[
             (social_updates_df['trust_score'] >= min_trust_score) &
             (social_updates_df['account_type'].isin(account_types))
         ].sort_values(['timestamp', 'trust_score'], ascending=[False, False])
         
-        # Display updates
         for _, update in filtered_updates.iterrows():
-            # Determine trust class and verification status
             trust_class = {
                 True: "trust-high" if update['trust_score'] >= 0.9 else "trust-medium",
                 False: "trust-low"
             }[update['trust_score'] >= 0.7]
             
             verification_badge = "verified" if update['verified'] else "unverified"
-            
-            # Select badge color based on account type and verification
             badge_color = {
                 'Official': '#00ff9d',
                 'Healthcare': '#00ff9d',
@@ -291,25 +278,24 @@ def main():
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-            st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
-            for _, alert in alerts_df.iterrows():
-                severity_color = {
+
+        st.markdown("<h3>⚠️ Active Alerts</h3>", unsafe_allow_html=True)
+        for _, alert in alerts_df.iterrows():
+            severity_color = {
                 "High": "🔴", 
                 "Medium": "🟡",
                 "Low": "🟢"
-                }.get(alert["severity"], "⚪")
-                
-                st.markdown(f"""
-                <div class="alert-box">
-                    <h4>{severity_color} {alert['type']} Alert</h4>
-                    <p>📍 <b>Location:</b> {alert['location']}</p>
-                    <p>🕒 <b>Time:</b> {alert['time']}</p>
-                    <p>⚠️ <b>Severity:</b> {alert['severity']}</p>
-                    <p>ℹ️ <b>Details:</b> {alert['description']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-    # Centers Tab
-    # Centers Tab
+            }.get(alert["severity"], "⚪")
+            
+            st.markdown(f"""
+            <div class="alert-box">
+                <h4>{severity_color} {alert['type']} Alert</h4>
+                <p>📍 <b>Location:</b> {alert['location']}</p>
+                <p>🕒 <b>Time:</b> {alert['time']}</p>
+                <p>⚠️ <b>Severity:</b> {alert['severity']}</p>
+                <p>ℹ️ <b>Details:</b> {alert['description']}</p>
+            </div>
+            """, unsafe_allow_html=True)
     with tab3:
         st.markdown("<h2>🏥 Critical Locations</h2>", unsafe_allow_html=True)
         
