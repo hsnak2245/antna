@@ -143,7 +143,7 @@ def main():
         """, unsafe_allow_html=True)
 
     # Main tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Home", "⚠️ Alerts", "🏥 Centers", "📱 Updates", "✅ Prep"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Home", "📱 Updates", "🏥 Centers", "✅ Prep"])
     
     
     with tab1:
@@ -504,73 +504,12 @@ def main():
             # Display the map
             st_folium(m, height=500)
 
-    # Inside Tab 3 (Social Updates)
-    with tab4:
-        st.markdown("<h2>📱 Live Updates</h2>", unsafe_allow_html=True)
-        
-        col1, col2 = st.columns([2,3])
-        with col1:
-            min_trust_score = st.slider("Trust Score Filter", 0.0, 1.0, 0.7, 0.1)
-        with col2:
-            account_types = st.multiselect(
-                "Source Filter",
-                options=social_updates_df['account_type'].unique(),
-                default=social_updates_df['account_type'].unique()
-            )
-        
-        # Filter updates
-        filtered_updates = social_updates_df[
-            (social_updates_df['trust_score'] >= min_trust_score) &
-            (social_updates_df['account_type'].isin(account_types))
-        ].sort_values(['timestamp', 'trust_score'], ascending=[False, False])
-        
-        # Display updates
-        for _, update in filtered_updates.iterrows():
-            # Determine trust class and verification status
-            trust_class = {
-                True: "trust-high" if update['trust_score'] >= 0.9 else "trust-medium",
-                False: "trust-low"
-            }[update['trust_score'] >= 0.7]
-            
-            verification_badge = "verified" if update['verified'] else "unverified"
-            
-            # Select badge color based on account type and verification
-            badge_color = {
-                'Official': '#00ff9d',
-                'Healthcare': '#00ff9d',
-                'Emergency': '#00ff9d',
-                'Media': '#ffbe0b',
-                'Citizen': '#888888'
-            }.get(update['account_type'], '#888888')
-            
-            st.markdown(f"""
-                <div class='social-update {trust_class}'>
-                    <div class="update-header">
-                        <div class="account-info">
-                            <strong style="color: {badge_color}">{update['account_type']}</strong>
-                            <span class="username">{update['username']}</span>
-                            <span class="badge {verification_badge}">
-                                {' ✓' if update['verified'] else '✕'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="update-content">
-                        {update['message']}
-                    </div>
-                    <div class="update-meta">
-                        <span class="meta-item">📍 {update['location']}</span>
-                        <span class="meta-separator">|</span>
-                        <span class="meta-item">💯 Trust: {update['trust_score']:.2f}</span>
-                        <span class="meta-separator">|</span>
-                        <span class="meta-item">👥 {update['engagement']}</span>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+    
 
 
     
     # Preparation Tab
-    with tab5:
+    with tab4:
         st.markdown("<h2>✅ Emergency Preparedness</h2>", unsafe_allow_html=True)
         
         # Checklist in a clean container
