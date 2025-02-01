@@ -322,7 +322,7 @@ def main():
         }
         
         # Split the page into 4:1 ratio
-        col1, col2 = st.columns([4, 1])
+        col1, col2 = st.columns([3, 2])
         
         with col1:
             # Map Block (Left)
@@ -340,6 +340,33 @@ def main():
             
             show_route = st.checkbox("Show route", value=False)
             
+            
+        
+        with col2:
+            # Information Block (Right)
+            occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
+            status_class = (
+                "status-active" if occupancy_percentage < 60 
+                else "status-busy" if occupancy_percentage < 90 
+                else "status-full"
+            )
+            
+            st.markdown(f"""
+                <div class="stats-box {status_class}">
+                    <div style="display: flex; justify-content: space-between; align-items: top;">
+                        <div style="flex: 2;">
+                            <h3>{location_info['name']}</h3>
+                            <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
+                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
+                            ({occupancy_percentage:.1f}%)</p>
+                            <p>💧 Water: {resources_info['water_supply']} units | 
+                            🍲 Food: {resources_info['food_supply']} units | 
+                            🏥 Medical: {resources_info['medical_kits']} kits</p>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
             # Get selected location details
             location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
             resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
@@ -441,31 +468,6 @@ def main():
             
             # Display the map
             st_folium(m, height=500)
-        
-        with col2:
-            # Information Block (Right)
-            occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
-            status_class = (
-                "status-active" if occupancy_percentage < 60 
-                else "status-busy" if occupancy_percentage < 90 
-                else "status-full"
-            )
-            
-            st.markdown(f"""
-                <div class="stats-box {status_class}">
-                    <div style="display: flex; justify-content: space-between; align-items: top;">
-                        <div style="flex: 2;">
-                            <h3>{location_info['name']}</h3>
-                            <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
-                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
-                            ({occupancy_percentage:.1f}%)</p>
-                            <p>💧 Water: {resources_info['water_supply']} units | 
-                            🍲 Food: {resources_info['food_supply']} units | 
-                            🏥 Medical: {resources_info['medical_kits']} kits</p>
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
 
     
 
