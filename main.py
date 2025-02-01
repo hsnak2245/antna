@@ -320,32 +320,85 @@ def main():
             "Malatya Battalgazi District": [38.4000, 38.3667],
             "Adıyaman Fault Line Zone": [37.8500, 38.2833]
         }
+        # Define common locations in Doha
+        doha_locations = {
+            "Doha City Center": [25.3548, 51.1839],
+            "West Bay": [25.3287, 51.5309],
+            "The Pearl": [25.3741, 51.5503],
+            "Katara Cultural Village": [25.3594, 51.5277],
+            "Hamad International Airport": [25.2608, 51.6138],
+            "Education City": [25.3149, 51.4400],
+            "Souq Waqif": [25.2867, 51.5333],
+            "Aspire Zone": [25.2684, 51.4481],
+            "Msheireb Downtown": [25.2897, 51.5335],
+            "Al Waab": [25.2590, 51.4782]
+        }
         
-        # Split the page into 4:1 ratio
-        col1, col2 = st.columns([3, 2])
+        # Create subtabs
+        list_tab, map_tab = st.tabs(["📋 List View", "🗺️ Map View"])
         
-        with col1:
-            # Map Block (Left)
-            current_location = st.selectbox(
-                "Your location",
-                options=list(turkey_eq_locations.keys()),
-                key='current_location_select'
-            )
-            
-            selected_location = st.selectbox(
-                "Select facility",
-                options=shelters_df['name'].tolist(),
-                key='map_location_select'
-            )
-            
-            show_route = st.checkbox("Show route", value=False)
-            
-            
+        # List View Tab
+        with list_tab:
+            # Create three columns for better spacing
+            cols = st.columns(3)
+            for idx, location in shelters_df.iterrows():
+                with cols[idx % 3]:
+                    resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                    occupancy = (location['current'] / location['capacity']) * 100
+                    
+                    st.markdown(f"""
+                        <div class="stats-box">
+                            <h3>{location['name']}</h3>
+                            <p>🏥 Type: {location['type']}</p>
+                            <p>📞 Contact: {location['contact']}</p>
+                            <p>👥 Occupancy: {location['current']}/{location['capacity']} 
+                            ({occupancy:.1f}%)</p>
+                            <p>💧 Water: {resources['water_supply']} units</p>
+                            <p>🍲 Food: {resources['food_supply']} units</p>
+                            <p>🏥 Medical: {resources['medical_kits']} kits</p>
+                            <p>🕒 Updated: {resources['last_updated']}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
         
-        with col2:
-            # Information Block (Right)
+        # Map View Tab
+        with map_tab:
+            # Location Details Block (Top)
+            st.markdown("<div class='location-details-container'>", unsafe_allow_html=True)
+            
+            # Type filter, location selector, current location, and route toggle
+            col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+            
+            with col1:
+                location_type = st.selectbox(
+                    "Filter by type",
+                    options=['All'] + list(shelters_df['type'].unique()),
+                    key='map_type_filter'
+                )
+            
+            filtered_df = shelters_df if location_type == 'All' else shelters_df[shelters_df['type'] == location_type]
+            
+            with col2:
+                selected_location = st.selectbox(
+                    "Select facility",
+                    options=filtered_df['name'].tolist(),
+                    key='map_location_select'
+                )
+            
+            with col3:
+                current_location = st.selectbox(
+                    "Your location",
+                    options=list(doha_locations.keys()),
+                    key='current_location_select'
+                )
+                
+            with col4:
+                show_route = st.checkbox("Show route", value=False)
+            
+            # Get selected location details
             location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
-            resources_info = resources_df[resources_df['shelter_name'] == selected_location].iloc[0]
+            resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
+            
+            # Display compact location details with status
             occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
             status_class = (
                 "status-active" if occupancy_percentage < 60 
@@ -359,7 +412,8 @@ def main():
                         <div style="flex: 2;">
                             <h3>{location_info['name']}</h3>
                             <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
-                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} </p>
+                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
+                            ({occupancy_percentage:.1f}%)</p>
                             <p>💧 Water: {resources_info['water_supply']} units | 
                             🍲 Food: {resources_info['food_supply']} units | 
                             🏥 Medical: {resources_info['medical_kits']} kits</p>
@@ -367,6 +421,109 @@ def main():
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+            
+            # Map Block (Bottom)
+            m = folium.Map(
+                location=turkey_eq_locations[current_location],  # Center map on selected current location
+                zoom_start=12,
+                tiles="cartodbpositron"
+            )
+            
+            # Add markers for all locations
+            for idx, location in filtered_df.iterrows():
+                color = {
+                    'Primary': 'red',
+                    'Secondary': 'blue'
+                }.get(location['type'], 'gray')
+                
+                occupancy = (location['current'] / location['capacity']) * 100
+                resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                
+                popup_content = f"""
+                    <div style="width: 200px">
+                        <h4>{location['name']}</h4>
+                        <p><b>Type:</b> {location['type']}</p>
+                        <p><b>Contact:</b> {location['contact']}</p>
+                        <p><b>Occupancy:</b> {occupancy:.1f}%</p>
+                        <p><b>Resources:</b></p>
+                        <ul>
+                            <li>Water: {resources['water_supply']} units</li>
+                            <li>Food: {resources['food_supply']} units</li>
+                            <li>Medical: {resources['medical_kits']} kits</li>
+                        </ul>
+                    </div>
+                """
+                
+                marker = folium.Marker(
+                    location=[location['lat'], location['lon']],
+                    popup=folium.Popup(popup_content, max_width=300),
+                    icon=folium.Icon(color=color, icon='info-sign'),
+                )
+                marker.add_to(m)
+            
+            # Add routing if requested
+            if show_route:
+                try:
+                    # Get coordinates for selected current location
+                    user_location = turkey_eq_locations[current_location]
+                    
+                    # Add user location marker
+                    folium.Marker(
+                        location=user_location,
+                        popup=f"Your Location ({current_location})",
+                        icon=folium.Icon(color='green', icon='info-sign')
+                    ).add_to(m)
+
+                    # Calculate route using OpenRouteService
+                    coordinates = [
+                        [user_location[1], user_location[0]],  # Current location (lon, lat)
+                        [location_info['lon'], location_info['lat']]  # Destination (lon, lat)
+                    ]
+                    
+                    route = ors_client.directions(
+                        coordinates=coordinates,
+                        profile='driving-car',
+                        format='geojson'
+                    )
+
+                    # Extract and convert route coordinates
+                    route_coords = [[coord[1], coord[0]] for coord in route['features'][0]['geometry']['coordinates']]
+                    
+                    # Add route to map
+                    folium.PolyLine(
+                        locations=route_coords,
+                        weight=4,
+                        color='green',
+                        opacity=0.8,
+                        tooltip='Route to Location'
+                    ).add_to(m)
+
+                    # Fit map bounds to show route
+                    m.fit_bounds([user_location, [location_info['lat'], location_info['lon']]])
+                    
+                    # Show route details
+                    duration_minutes = route['features'][0]['properties']['segments'][0]['duration'] / 60
+                    distance_km = route['features'][0]['properties']['segments'][0]['distance'] / 1000
+                    
+                    st.markdown(f"""
+                        <div class="route-info">
+                            <h4>🚗 Route Information:</h4>
+                            <p>📍 From: {current_location}</p>
+                            <p>🎯 To: {location_info['name']}</p>
+                            <p>⏱️ Estimated Time: {duration_minutes:.1f} minutes</p>
+                            <p>📏 Distance: {distance_km:.1f} km</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                except Exception as e:
+                    st.error(f"Error calculating route: {str(e)}")
+            
+            # Display the map
+            st_folium(m, height=500)
+            
+            
+        
+
 
             
 
