@@ -302,8 +302,7 @@ def main():
         # Get the data
         _, shelters_df, resources_df, _ = generate_data()
         
-        # Define common locations in Doha
-    # Define affected locations in Turkey
+        # Define affected locations in Turkey
         turkey_eq_locations = {
             "Gaziantep City Center": [37.0662, 37.3833],
             "Kahramanmaraş City Center": [37.5753, 36.9228],
@@ -321,91 +320,30 @@ def main():
             "Malatya Battalgazi District": [38.4000, 38.3667],
             "Adıyaman Fault Line Zone": [37.8500, 38.2833]
         }
-        # Create subtabs
-        list_tab, map_tab = st.tabs(["📋 List View", "🗺️ Map View"])
         
-        # List View Tab
-        with list_tab:
-            for idx, location in shelters_df.iterrows():
-                resources = resources_df[resources_df['location'] == location['name']].iloc[0]
-                occupancy = (location['current'] / location['capacity']) * 100
-                st.markdown(f"""
-                    <div class="stats-box">
-                    <h3>{location['name']}</h3>
-                    <p>🏥 Type: {location['type']}</p>
-                    <p>📞 Contact: {location['contact']}</p>
-                    <p>👥 Occupancy: {location['current']}/{location['capacity']} 
-                    ({occupancy:.1f}%)</p>
-                    <p>💧 Water: {resources['water_supply']} units</p>
-                    <p>🍲 Food: {resources['food_supply']} units</p>
-                    <p>🏥 Medical: {resources['medical_kits']} kits</p>
-                    <p>🕒 Updated: {resources['last_updated']}</p>
-                    </div>
-                """, unsafe_allow_html=True)
+        # Split the page into 4:1 ratio
+        col1, col2 = st.columns([4, 1])
         
-        # Map View Tab
-        with map_tab:
-            # Location Details Block (Top)
-            st.markdown("<div class='location-details-container'>", unsafe_allow_html=True)
+        with col1:
+            # Map Block (Left)
+            current_location = st.selectbox(
+                "Your location",
+                options=list(turkey_eq_locations.keys()),
+                key='current_location_select'
+            )
             
-            # Type filter, location selector, current location, and route toggle
-            col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+            selected_location = st.selectbox(
+                "Select facility",
+                options=shelters_df['name'].tolist(),
+                key='map_location_select'
+            )
             
-            with col1:
-                location_type = st.selectbox(
-                    "Filter by type",
-                    options=['All'] + list(shelters_df['type'].unique()),
-                    key='map_type_filter'
-                )
-            
-            filtered_df = shelters_df if location_type == 'All' else shelters_df[shelters_df['type'] == location_type]
-            
-            with col2:
-                selected_location = st.selectbox(
-                    "Select facility",
-                    options=filtered_df['name'].tolist(),
-                    key='map_location_select'
-                )
-            
-            with col3:
-                current_location = st.selectbox(
-                    "Your location",
-                    options=list(turkey_eq_locations.keys()),
-                    key='current_location_select'
-                )
-                
-            with col4:
-                show_route = st.checkbox("Show route", value=False)
+            show_route = st.checkbox("Show route", value=False)
             
             # Get selected location details
             location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
             resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
             
-            # Display compact location details with status
-            occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
-            status_class = (
-                "status-active" if occupancy_percentage < 60 
-                else "status-busy" if occupancy_percentage < 90 
-                else "status-full"
-            )
-            
-            st.markdown(f"""
-                <div class="stats-box {status_class}">
-                    <div style="display: flex; justify-content: space-between; align-items: top;">
-                        <div style="flex: 2;">
-                            <h3>{location_info['name']}</h3>
-                            <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
-                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
-                            ({occupancy_percentage:.1f}%)</p>
-                            <p>💧 Water: {resources_info['water_supply']} units | 
-                            🍲 Food: {resources_info['food_supply']} units | 
-                            🏥 Medical: {resources_info['medical_kits']} kits</p>
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Map Block (Bottom)
             m = folium.Map(
                 location=turkey_eq_locations[current_location],  # Center map on selected current location
                 zoom_start=12,
@@ -413,7 +351,7 @@ def main():
             )
             
             # Add markers for all locations
-            for idx, location in filtered_df.iterrows():
+            for idx, location in shelters_df.iterrows():
                 color = {
                     'Primary': 'red',
                     'Secondary': 'blue'
@@ -503,6 +441,31 @@ def main():
             
             # Display the map
             st_folium(m, height=500)
+        
+        with col2:
+            # Information Block (Right)
+            occupancy_percentage = (location_info['current'] / location_info['capacity']) * 100
+            status_class = (
+                "status-active" if occupancy_percentage < 60 
+                else "status-busy" if occupancy_percentage < 90 
+                else "status-full"
+            )
+            
+            st.markdown(f"""
+                <div class="stats-box {status_class}">
+                    <div style="display: flex; justify-content: space-between; align-items: top;">
+                        <div style="flex: 2;">
+                            <h3>{location_info['name']}</h3>
+                            <p>🏥 Type: {location_info['type']} | 📞 {location_info['contact']}</p>
+                            <p>👥 Occupancy: {location_info['current']}/{location_info['capacity']} 
+                            ({occupancy_percentage:.1f}%)</p>
+                            <p>💧 Water: {resources_info['water_supply']} units | 
+                            🍲 Food: {resources_info['food_supply']} units | 
+                            🏥 Medical: {resources_info['medical_kits']} kits</p>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
 
     
 
