@@ -320,7 +320,7 @@ def main():
             "Malatya Battalgazi District": [38.4000, 38.3667],
             "Adıyaman Fault Line Zone": [37.8500, 38.2833]
         }
-        deleted
+
             
             
         
