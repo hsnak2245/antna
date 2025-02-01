@@ -256,7 +256,7 @@ section[data-testid="stSidebar"] .block-container {
 }
 
 .stTabs [aria-selected="true"] {
-    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)) !important;
+    background: linear-gradient(90deg, var(--color-darker), var(--color-dark)) !important;
     color: black !important;
     font-weight: bold !important;
     transform: translateY(-2px);
