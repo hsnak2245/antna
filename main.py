@@ -367,107 +367,107 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
 
-            # Get selected location details
-            location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
-            resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
+        # Get selected location details
+        location_info = shelters_df[shelters_df['name'] == selected_location].iloc[0]
+        resources_info = resources_df[resources_df['location'] == selected_location].iloc[0]
+        
+        m = folium.Map(
+            location=turkey_eq_locations[current_location],  # Center map on selected current location
+            zoom_start=12,
+            tiles="cartodbpositron"
+        )
+        
+        # Add markers for all locations with ant-related emojis
+        for idx, location in shelters_df.iterrows():
+            emoji = {
+                'Primary': '🐜',
+                'Secondary': '🐛'
+            }.get(location['type'], '🦗')
             
-            m = folium.Map(
-                location=turkey_eq_locations[current_location],  # Center map on selected current location
-                zoom_start=12,
-                tiles="cartodbpositron"
+            occupancy = (location['current'] / location['capacity']) * 100
+            resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+            
+            popup_content = f"""
+                <div style="width: 200px">
+                    <h4>{emoji} {location['name']}</h4>
+                    <p><b>Type:</b> {location['type']}</p>
+                    <p><b>Contact:</b> {location['contact']}</p>
+                    <p><b>Occupancy:</b> {occupancy:.1f}%</p>
+                    <p><b>Resources:</b></p>
+                    <ul>
+                        <li>Water: {resources['water_supply']} units</li>
+                        <li>Food: {resources['food_supply']} units</li>
+                        <li>Medical: {resources['medical_kits']} kits</li>
+                    </ul>
+                </div>
+            """
+            
+            marker = folium.Marker(
+                location=[location['lat'], location['lon']],
+                popup=folium.Popup(popup_content, max_width=300),
+                icon=folium.Icon(color='black', icon=emoji, prefix='fa'),
             )
-            
-            # Add markers for all locations with ant-related emojis
-            for idx, location in shelters_df.iterrows():
-                emoji = {
-                    'Primary': '🐜',
-                    'Secondary': '🐛'
-                }.get(location['type'], '🦗')
+            marker.add_to(m)
+        
+        # Add routing if requested
+        if show_route:
+            try:
+                # Get coordinates for selected current location
+                user_location = turkey_eq_locations[current_location]
                 
-                occupancy = (location['current'] / location['capacity']) * 100
-                resources = resources_df[resources_df['location'] == location['name']].iloc[0]
+                # Add user location marker
+                folium.Marker(
+                    location=user_location,
+                    popup=f"Your Location ({current_location})",
+                    icon=folium.Icon(color='green', icon='user', prefix='fa')
+                ).add_to(m)
+
+                # Calculate route using OpenRouteService
+                coordinates = [
+                    [user_location[1], user_location[0]],  # Current location (lon, lat)
+                    [location_info['lon'], location_info['lat']]  # Destination (lon, lat)
+                ]
                 
-                popup_content = f"""
-                    <div style="width: 200px">
-                        <h4>{emoji} {location['name']}</h4>
-                        <p><b>Type:</b> {location['type']}</p>
-                        <p><b>Contact:</b> {location['contact']}</p>
-                        <p><b>Occupancy:</b> {occupancy:.1f}%</p>
-                        <p><b>Resources:</b></p>
-                        <ul>
-                            <li>Water: {resources['water_supply']} units</li>
-                            <li>Food: {resources['food_supply']} units</li>
-                            <li>Medical: {resources['medical_kits']} kits</li>
-                        </ul>
-                    </div>
-                """
-                
-                marker = folium.Marker(
-                    location=[location['lat'], location['lon']],
-                    popup=folium.Popup(popup_content, max_width=300),
-                    icon=folium.Icon(color='black', icon=emoji, prefix='fa'),
+                route = ors_client.directions(
+                    coordinates=coordinates,
+                    profile='driving-car',
+                    format='geojson'
                 )
-                marker.add_to(m)
-            
-            # Add routing if requested
-            if show_route:
-                try:
-                    # Get coordinates for selected current location
-                    user_location = turkey_eq_locations[current_location]
-                    
-                    # Add user location marker
-                    folium.Marker(
-                        location=user_location,
-                        popup=f"Your Location ({current_location})",
-                        icon=folium.Icon(color='green', icon='user', prefix='fa')
-                    ).add_to(m)
 
-                    # Calculate route using OpenRouteService
-                    coordinates = [
-                        [user_location[1], user_location[0]],  # Current location (lon, lat)
-                        [location_info['lon'], location_info['lat']]  # Destination (lon, lat)
-                    ]
-                    
-                    route = ors_client.directions(
-                        coordinates=coordinates,
-                        profile='driving-car',
-                        format='geojson'
-                    )
+                # Extract and convert route coordinates
+                route_coords = [[coord[1], coord[0]] for coord in route['features'][0]['geometry']['coordinates']]
+                
+                # Add route to map
+                folium.PolyLine(
+                    locations=route_coords,
+                    weight=4,
+                    color='green',
+                    opacity=0.8,
+                    tooltip='Route to Location'
+                ).add_to(m)
 
-                    # Extract and convert route coordinates
-                    route_coords = [[coord[1], coord[0]] for coord in route['features'][0]['geometry']['coordinates']]
-                    
-                    # Add route to map
-                    folium.PolyLine(
-                        locations=route_coords,
-                        weight=4,
-                        color='green',
-                        opacity=0.8,
-                        tooltip='Route to Location'
-                    ).add_to(m)
-
-                    # Fit map bounds to show route
-                    m.fit_bounds([user_location, [location_info['lat'], location_info['lon']]])
-                    
-                    # Show route details
-                    duration_minutes = route['features'][0]['properties']['segments'][0]['duration'] / 60
-                    distance_km = route['features'][0]['properties']['segments'][0]['distance'] / 1000
-                    
-                    st.markdown(f"""
-                        <div class="route-info">
-                            <h4>🚗 Route Information:</h4>
-                            <p>📍 From: {current_location}</p>
-                            <p>🎯 To: {location_info['name']}</p>
-                            <p>⏱️ Estimated Time: {duration_minutes:.1f} minutes</p>
-                            <p>📏 Distance: {distance_km:.1f} km</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    
-                except Exception as e:
-                    st.error(f"Error calculating route: {str(e)}")
-            
-            # Display the map
-            st_folium(m, height=500)
+                # Fit map bounds to show route
+                m.fit_bounds([user_location, [location_info['lat'], location_info['lon']]])
+                
+                # Show route details
+                duration_minutes = route['features'][0]['properties']['segments'][0]['duration'] / 60
+                distance_km = route['features'][0]['properties']['segments'][0]['distance'] / 1000
+                
+                st.markdown(f"""
+                    <div class="route-info">
+                        <h4>🚗 Route Information:</h4>
+                        <p>📍 From: {current_location}</p>
+                        <p>🎯 To: {location_info['name']}</p>
+                        <p>⏱️ Estimated Time: {duration_minutes:.1f} minutes</p>
+                        <p>📏 Distance: {distance_km:.1f} km</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+            except Exception as e:
+                st.error(f"Error calculating route: {str(e)}")
+        
+        # Display the map
+        st_folium(m, height=500)
 
     
 
