@@ -161,26 +161,6 @@ def main():
     
     
     with tab1:
-        # Voice Assistant
-        st.subheader("")
-        audio_bytes = audio_recorder(
-            text="",  # Minimal text
-            recording_color="white",
-            neutral_color="red"
-        )
-        
-        if audio_bytes:
-            with st.spinner("Processing voice..."):
-                transcribed_text = process_voice_input(audio_bytes)
-                if transcribed_text:
-                    st.info(f"You said: {transcribed_text}")
-                    with st.spinner("Processing..."):
-                        response = process_query_with_rag(transcribed_text, social_updates_df)
-                        st.markdown(f"""
-                            <div class="ai-response">
-                                <strong>ANTNA:</strong><br>{response}
-                            </div>
-                        """, unsafe_allow_html=True)
         
         user_query = st.text_input("💬 Ask ANTNA", placeholder="Type your question...")
         if user_query:
