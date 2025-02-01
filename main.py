@@ -350,19 +350,19 @@ def main():
                 tiles="cartodbpositron"
             )
             
-            # Add markers for all locations
+            # Add markers for all locations with ant-related emojis
             for idx, location in shelters_df.iterrows():
-                color = {
-                    'Primary': 'red',
-                    'Secondary': 'blue'
-                }.get(location['type'], 'gray')
+                emoji = {
+                    'Primary': '🐜',
+                    'Secondary': '🐛'
+                }.get(location['type'], '🦗')
                 
                 occupancy = (location['current'] / location['capacity']) * 100
                 resources = resources_df[resources_df['location'] == location['name']].iloc[0]
                 
                 popup_content = f"""
                     <div style="width: 200px">
-                        <h4>{location['name']}</h4>
+                        <h4>{emoji} {location['name']}</h4>
                         <p><b>Type:</b> {location['type']}</p>
                         <p><b>Contact:</b> {location['contact']}</p>
                         <p><b>Occupancy:</b> {occupancy:.1f}%</p>
@@ -378,7 +378,7 @@ def main():
                 marker = folium.Marker(
                     location=[location['lat'], location['lon']],
                     popup=folium.Popup(popup_content, max_width=300),
-                    icon=folium.Icon(color=color, icon='info-sign'),
+                    icon=folium.Icon(color='black', icon=emoji, prefix='fa'),
                 )
                 marker.add_to(m)
             
@@ -392,7 +392,7 @@ def main():
                     folium.Marker(
                         location=user_location,
                         popup=f"Your Location ({current_location})",
-                        icon=folium.Icon(color='green', icon='info-sign')
+                        icon=folium.Icon(color='green', icon='user', prefix='fa')
                     ).add_to(m)
 
                     # Calculate route using OpenRouteService
