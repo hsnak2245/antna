@@ -76,7 +76,7 @@ def process_query_with_rag_and_map(query, social_updates_df, shelters_df):
         try:
             response = groq_client.chat.completions.create(
                 messages=messages,
-                model="mixtral-8x7b-32768",
+                model=""llama3-8b-8192"",
                 temperature=0.7,
                 max_tokens=500,
                 top_p=0.9
